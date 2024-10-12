@@ -1,0 +1,8 @@
+services:
+  openid-provider:
+    image: golang:1.23
+    build:
+      context: ../backend
+      dockerfile: ../backend/Dockerfile
+    ports:
+        - 8080:8080

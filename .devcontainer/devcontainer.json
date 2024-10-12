@@ -1,0 +1,5 @@
+{
+  "name": "oidc-playground",
+  "dockerComposeFile": "./compose.yml",
+  "service": "openid-provider"
+}
