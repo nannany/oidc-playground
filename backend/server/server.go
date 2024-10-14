@@ -43,6 +43,8 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 
 func (m *MyServer) Discovery(ctx context.Context, r *op.Request[struct{}]) (*op.Response, error) {
 	return op.NewResponse(&oidc.DiscoveryConfiguration{
-		Issuer: "http://localhost:8080",
+		Issuer:                "http://localhost:8080",
+		AuthorizationEndpoint: "http://localhost:8080/authorize",
+		TokenEndpoint:         "http://localhost:8080/token",
 	}), nil
 }
