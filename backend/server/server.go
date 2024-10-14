@@ -38,7 +38,7 @@ func (m *MyServer) VerifyAuthRequest(ctx context.Context, r *op.Request[oidc.Aut
 }
 
 func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthRequest]) (*op.Redirect, error) {
-	return op.NewRedirect("https://google.com"), nil
+	return op.NewRedirect("http://localhost:8080/login"), nil
 }
 
 func (m *MyServer) Discovery(ctx context.Context, r *op.Request[struct{}]) (*op.Response, error) {
