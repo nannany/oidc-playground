@@ -3,22 +3,20 @@ package main
 import (
 	"fmt"
 	"github.com/zitadel/oidc/v3/pkg/op"
+	server2 "myoidc/server"
 	"net/http"
 )
 
 // 8080で動くサーバーを起動する
 func main() {
+	fmt.Println("openid provider started!")
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Hello, World!")
-	})
-	http.ListenAndServe(":8080", nil)
-}
-
-type MyServer struct {
-	op.UnimplementedServer
-}
-
-func NewMyServer() *MyServer {
-	return &MyServer{UnimplementedServer: op.UnimplementedServer{}}
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: op.RegisterServer(server2.NewMyServer(), *op.DefaultEndpoints),
+	}
+	err := server.ListenAndServe()
+	if err != nil {
+		panic(err)
+	}
 }
