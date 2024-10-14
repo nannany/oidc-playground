@@ -19,6 +19,8 @@ import (
 
 var tmpl = template.Must(template.ParseFiles("templates/index.html"))
 
+var sessionID = ""
+
 var (
 	callbackPath = "/auth/callback"
 	key          = []byte("test1234test1234")
@@ -81,21 +83,37 @@ func main() {
 
 	urlOptions = append(urlOptions, rp.WithResponseModeURLParam(oidc.ResponseMode(responseMode)))
 
-	// register the AuthURLHandler at your preferred path.
-	// the AuthURLHandler creates the auth request and redirects the user to the auth server.
-	// including state handling with secure cookie and the possibility to use PKCE.
-	// Prompts can optionally be set to inform the server of
-	// any messages that need to be prompted back to the user.
 	http.Handle("/login", rp.AuthURLHandler(
 		state,
 		provider,
 		urlOptions...,
 	))
 
+	http.HandleFunc(callbackPath, callbackHandler())
+
 	// 8081ポートでサーバーを起動
 	log.Println("Server started at http://localhost:8081")
 	if err := http.ListenAndServe(":8081", nil); err != nil {
 		log.Fatal(err)
+	}
+
+}
+
+func callbackHandler() func(http.ResponseWriter, *http.Request) {
+
+	// とりあえず、認証okとして、セッションのセットとリダイレクト
+	return func(w http.ResponseWriter, r *http.Request) {
+		// クッキーにセッションをセット
+		sessionID = uuid.New().String()
+		http.SetCookie(w, &http.Cookie{ // クッキーをセット
+			Name:     "rp-session",
+			Value:    sessionID,
+			Secure:   false,
+			HttpOnly: true,
+			Path:     "/",
+		})
+		// その後、セッションをセットして、リダイレクト
+		http.Redirect(w, r, "/", http.StatusFound)
 	}
 
 }
