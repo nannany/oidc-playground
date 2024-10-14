@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"rp/client"
 )
 
 var tmpl = template.Must(template.ParseFiles("templates/index.html"))
@@ -12,6 +13,7 @@ var tmpl = template.Must(template.ParseFiles("templates/index.html"))
 func main() {
 	// ハンドラを設定
 	http.HandleFunc("/", handler)
+	http.HandleFunc("/login", client.LoginHandler)
 
 	// 8081ポートでサーバーを起動
 	log.Println("Server started at http://localhost:8081")
