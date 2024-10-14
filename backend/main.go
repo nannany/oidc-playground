@@ -26,6 +26,7 @@ func main() {
 	router.Get("/", homeViewHandler)
 	router.Get("/login", loginViewHandler)
 	router.Post("/login/username", loginHandler)
+	router.Post("/logout", logoutHandler)
 
 	router.Mount("/", op.RegisterServer(server2.NewMyServer(), *op.DefaultEndpoints))
 
@@ -37,6 +38,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	// セッションを削除する
+	opSessionID = ""
+	http.SetCookie(w, &http.Cookie{ // クッキーをセット
+		Name:     "op-session",
+		Value:    opSessionID,
+		Secure:   false,
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	// rpにリダイレクト
+	http.Redirect(w, r, "http://localhost:8080/", http.StatusFound)
 }
 
 func homeViewHandler(w http.ResponseWriter, r *http.Request) {
