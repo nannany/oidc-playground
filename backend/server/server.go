@@ -29,8 +29,8 @@ func (m *MyServer) VerifyAuthRequest(ctx context.Context, r *op.Request[oidc.Aut
 		Request: r,
 		Client: NewClient(
 			op.ApplicationTypeWeb,
-			[]string{"http://localhost:9999/notapplied"},
-			[]string{"http://localhost:9999/**"},
+			[]string{"http://localhost:8081/auth/callback"},
+			[]string{"http://localhost:8081/**"},
 			true,
 			[]oidc.ResponseType{oidc.ResponseTypeCode}),
 	}, nil
