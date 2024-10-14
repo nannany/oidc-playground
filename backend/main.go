@@ -17,7 +17,8 @@ func main() {
 
 	router := chi.NewRouter()
 
-	router.HandleFunc("/login", loginViewHandler)
+	router.Get("/login", loginViewHandler)
+	router.Post("/login/username", loginHandler)
 
 	router.Mount("/", op.RegisterServer(server2.NewMyServer(), *op.DefaultEndpoints))
 
@@ -41,4 +42,14 @@ func loginViewHandler(w http.ResponseWriter, r *http.Request) {
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	_ = r.ParseForm()
+	username := r.Form.Get("username")
+
+	fmt.Println("username:", username)
+
+	// rpにリダイレクト
+	http.Redirect(w, r, "http://localhost:8081/auth/callback", http.StatusFound)
 }
