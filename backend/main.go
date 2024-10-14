@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/zitadel/oidc/v3/pkg/op"
 	"html/template"
 	server2 "myoidc/server"
@@ -10,6 +11,8 @@ import (
 )
 
 var tmpl = template.Must(template.ParseFiles("templates/login.html"))
+
+var opSessionID = ""
 
 // 8080で動くサーバーを起動する
 func main() {
@@ -49,6 +52,16 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.Form.Get("username")
 
 	fmt.Println("username:", username)
+
+	// クッキーにセッションをセット
+	opSessionID = uuid.New().String()
+	http.SetCookie(w, &http.Cookie{ // クッキーをセット
+		Name:     "op-session",
+		Value:    opSessionID,
+		Secure:   false,
+		HttpOnly: true,
+		Path:     "/",
+	})
 
 	// rpにリダイレクト
 	http.Redirect(w, r, "http://localhost:8081/auth/callback", http.StatusFound)

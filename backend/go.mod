@@ -2,11 +2,14 @@ module myoidc
 
 go 1.23.2
 
-require github.com/zitadel/oidc/v3 v3.30.1
+require (
+	github.com/go-chi/chi/v5 v5.1.0
+	github.com/google/uuid v1.6.0
+	github.com/zitadel/oidc/v3 v3.30.1
+)
 
 require (
 	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
-	github.com/go-chi/chi/v5 v5.1.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
