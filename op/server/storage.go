@@ -89,7 +89,7 @@ func (s Storage) GetClientByClientID(ctx context.Context, clientID string) (op.C
 
 func (s Storage) AuthorizeClientIDSecret(ctx context.Context, clientID, clientSecret string) error {
 	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (s Storage) SetUserinfoFromScopes(ctx context.Context, userinfo *oidc.UserInfo, userID, clientID string, scopes []string) error {
