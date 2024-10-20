@@ -89,3 +89,23 @@ func (m *MyServer) Discovery(ctx context.Context, r *op.Request[struct{}]) (*op.
 		TokenEndpoint:         "http://localhost:8080/oauth/token",
 	}), nil
 }
+
+func (m *MyServer) CodeExchange(ctx context.Context, r *op.ClientRequest[oidc.AccessTokenRequest]) (*op.Response, error) {
+	authReq, err := op.AuthRequestByCode(ctx, Storage{}, r.Data.Code)
+	if err != nil {
+		return nil, err
+	}
+	if r.Client.AuthMethod() == oidc.AuthMethodNone || r.Data.CodeVerifier != "" {
+		if err = op.AuthorizeCodeChallenge(r.Data.CodeVerifier, authReq.GetCodeChallenge()); err != nil {
+			return nil, err
+		}
+	}
+	if r.Data.RedirectURI != authReq.GetRedirectURI() {
+		return nil, oidc.ErrInvalidGrant().WithDescription("redirect_uri does not correspond")
+	}
+	resp, err := op.CreateTokenResponse(ctx, authReq, r.Client, TokenCreator{}, true, r.Data.Code, "")
+	if err != nil {
+		return nil, err
+	}
+	return op.NewResponse(resp), nil
+}
