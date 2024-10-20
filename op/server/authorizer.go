@@ -31,6 +31,8 @@ func (a Authorizer) IDTokenHintVerifier(ctx context.Context) *op.IDTokenHintVeri
 	panic("implement me")
 }
 
+// Crypto returns the crypto implementation
+// これでauthorization code grantのcodeを作ってる
 func (a Authorizer) Crypto() op.Crypto {
 	//TODO implement me
 	panic("implement me")
