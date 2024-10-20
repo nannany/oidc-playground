@@ -89,7 +89,20 @@ func main() {
 		urlOptions...,
 	))
 
-	http.HandleFunc(callbackPath, callbackHandler())
+	// rp.CodeExchangeCallback を定義
+	f := func(w http.ResponseWriter, r *http.Request, tokens *oidc.Tokens[*oidc.IDTokenClaims], state string, rp rp.RelyingParty) {
+		// とりあえず、認証okとして、セッションのセットとリダイレクト
+		sessionID = uuid.New().String()
+		http.SetCookie(w, &http.Cookie{ // クッキーをセット
+			Name:     "rp-session",
+			Value:    sessionID,
+			Secure:   false,
+			HttpOnly: true,
+		})
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+
+	http.Handle(callbackPath, rp.CodeExchangeHandler[*oidc.IDTokenClaims](f, provider))
 
 	// 8081ポートでサーバーを起動
 	log.Println("Server started at http://localhost:8081")
