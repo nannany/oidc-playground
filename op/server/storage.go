@@ -28,9 +28,10 @@ func (s Storage) AuthRequestByCode(ctx context.Context, s2 string) (op.AuthReque
 	panic("implement me")
 }
 
-func (s Storage) SaveAuthCode(ctx context.Context, s3 string, s2 string) error {
-	//TODO implement me
-	panic("implement me")
+func (s Storage) SaveAuthCode(ctx context.Context, authRequestID string, code string) error {
+	codeAndAuthRequest[code] = AuthRequests[authRequestID]
+
+	return nil
 }
 
 func (s Storage) DeleteAuthRequest(ctx context.Context, s2 string) error {

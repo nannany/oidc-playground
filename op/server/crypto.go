@@ -6,14 +6,11 @@ type Crypto struct {
 }
 
 func (c Crypto) Encrypt(s string) (string, error) {
-	//TODO implement me
-	panic("implement me")
-
+	return s, nil
 }
 
 func (c Crypto) Decrypt(s string) (string, error) {
-	//TODO implement me
-	panic("implement me")
+	return s, nil
 }
 
 var _ op.Crypto = (*Crypto)(nil)

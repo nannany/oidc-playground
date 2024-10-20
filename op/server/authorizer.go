@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	httphelper "github.com/zitadel/oidc/v3/pkg/http"
+	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"github.com/zitadel/oidc/v3/pkg/op"
 	"log/slog"
 )
@@ -21,9 +22,9 @@ func (a Authorizer) Decoder() httphelper.Decoder {
 	panic("implement me")
 }
 
+// これ何に使うんだ。。？
 func (a Authorizer) Encoder() httphelper.Encoder {
-	//TODO implement me
-	panic("implement me")
+	return httphelper.Encoder(oidc.NewEncoder())
 }
 
 func (a Authorizer) IDTokenHintVerifier(ctx context.Context) *op.IDTokenHintVerifier {
@@ -34,8 +35,7 @@ func (a Authorizer) IDTokenHintVerifier(ctx context.Context) *op.IDTokenHintVeri
 // Crypto returns the crypto implementation
 // これでauthorization code grantのcodeを作ってる
 func (a Authorizer) Crypto() op.Crypto {
-	//TODO implement me
-	panic("implement me")
+	return Crypto{}
 }
 
 func (a Authorizer) RequestObjectSupported() bool {

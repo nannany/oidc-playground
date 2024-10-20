@@ -30,12 +30,14 @@ type AuthRequest struct {
 // authorization reqを保存しておくメモリ領域
 var AuthRequests = make(map[string]*AuthRequest)
 
+// codeとauth reqを保存しておくメモリ領域
+var codeAndAuthRequest = make(map[string]*AuthRequest)
+
 // op.AuthRequestを実装していることを確認
 var _ op.AuthRequest = (*AuthRequest)(nil)
 
 func (a AuthRequest) GetID() string {
-	//TODO implement me
-	panic("implement me")
+	return a.ID
 }
 
 func (a AuthRequest) GetACR() string {
@@ -73,8 +75,7 @@ func (a AuthRequest) GetNonce() string {
 }
 
 func (a AuthRequest) GetRedirectURI() string {
-	//TODO implement me
-	panic("implement me")
+	return a.CallbackURI
 }
 
 func (a AuthRequest) GetResponseType() oidc.ResponseType {
@@ -82,8 +83,7 @@ func (a AuthRequest) GetResponseType() oidc.ResponseType {
 }
 
 func (a AuthRequest) GetResponseMode() oidc.ResponseMode {
-	//TODO implement me
-	panic("implement me")
+	return a.ResponseMode
 }
 
 func (a AuthRequest) GetScopes() []string {
@@ -92,8 +92,7 @@ func (a AuthRequest) GetScopes() []string {
 }
 
 func (a AuthRequest) GetState() string {
-	//TODO implement me
-	panic("implement me")
+	return a.TransferState
 }
 
 func (a AuthRequest) GetSubject() string {
