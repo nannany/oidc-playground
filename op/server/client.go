@@ -14,6 +14,19 @@ type Client struct {
 	responseType      []oidc.ResponseType
 }
 
+// client を保存しておくメモリ領域
+var clients = make(map[string]*Client)
+
+func init() {
+	clients["client_id"] = NewClient(
+		op.ApplicationTypeWeb,
+		[]string{"http://localhost:8081/auth/callback"},
+		[]string{"http://localhost:8081/**"},
+		true,
+		[]oidc.ResponseType{oidc.ResponseTypeCode},
+	)
+}
+
 var _ op.Client = (*Client)(nil)
 
 func NewClient(applicationType op.ApplicationType, redirectUris []string, redirectUrisGlobs []string, devMode bool, responseType []oidc.ResponseType) *Client {
