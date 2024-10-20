@@ -18,3 +18,4 @@ services:
         condition: service_healthy
     ports:
       - 8081:8081
+    network_mode: "host"
