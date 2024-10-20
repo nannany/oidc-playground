@@ -87,8 +87,7 @@ func (a AuthRequest) GetResponseMode() oidc.ResponseMode {
 }
 
 func (a AuthRequest) GetScopes() []string {
-	//TODO implement me
-	panic("implement me")
+	return a.Scopes
 }
 
 func (a AuthRequest) GetState() string {

@@ -76,8 +76,7 @@ func (c Client) LoginURL(s string) string {
 }
 
 func (c Client) AccessTokenType() op.AccessTokenType {
-	//TODO implement me
-	panic("implement me")
+	return op.AccessTokenTypeJWT
 }
 
 func (c Client) IDTokenLifetime() time.Duration {
