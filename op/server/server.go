@@ -39,9 +39,6 @@ func (m *MyServer) VerifyAuthRequest(ctx context.Context, r *op.Request[oidc.Aut
 
 }
 
-// authorization reqを保存しておくメモリ領域
-var authRequests = make(map[string]*AuthRequest)
-
 func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthRequest]) (*op.Redirect, error) {
 	authReq := r.Data
 

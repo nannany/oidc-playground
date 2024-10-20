@@ -27,6 +27,9 @@ type AuthRequest struct {
 	authTime time.Time
 }
 
+// authorization reqを保存しておくメモリ領域
+var authRequests = make(map[string]*AuthRequest)
+
 // op.AuthRequestを実装していることを確認
 var _ op.AuthRequest = (*AuthRequest)(nil)
 
