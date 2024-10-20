@@ -113,9 +113,11 @@ func homeViewHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginViewHandler(w http.ResponseWriter, r *http.Request) {
+	// クエリパラメータのrequest_idを取得
+	requestID := r.URL.Query().Get("request_id")
+	// IDに上記で取得したrequestIDをセット
 	data := map[string]string{
-		"Title":   "Go Template Example",
-		"Message": "This is a static HTML page rendered with Go!",
+		"RequestID": requestID,
 	}
 
 	// テンプレートをレンダリング
@@ -126,8 +128,10 @@ func loginViewHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	_ = r.ParseForm()
+	id := r.Form.Get("id")
 	username := r.Form.Get("username")
 
+	fmt.Println("id:", id)
 	fmt.Println("username:", username)
 
 	// クッキーにセッションをセット

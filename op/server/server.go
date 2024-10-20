@@ -59,7 +59,7 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 	// メモリにauthorization epに飛んできたリクエストを保存する
 	authRequests[request.ID] = request
 
-	return op.NewRedirect("http://localhost:8080/login"), nil
+	return op.NewRedirect(r.Client.LoginURL(request.ID)), nil
 }
 
 // リクエストを保存形式に合わせるべく変換

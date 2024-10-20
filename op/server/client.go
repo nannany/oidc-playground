@@ -66,8 +66,7 @@ func (c Client) GrantTypes() []oidc.GrantType {
 }
 
 func (c Client) LoginURL(s string) string {
-	//TODO implement me
-	panic("implement me")
+	return "http://localhost:8080/login?request_id=" + s
 }
 
 func (c Client) AccessTokenType() op.AccessTokenType {
