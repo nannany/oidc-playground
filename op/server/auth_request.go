@@ -28,7 +28,7 @@ type AuthRequest struct {
 }
 
 // authorization reqを保存しておくメモリ領域
-var authRequests = make(map[string]*AuthRequest)
+var AuthRequests = make(map[string]*AuthRequest)
 
 // op.AuthRequestを実装していることを確認
 var _ op.AuthRequest = (*AuthRequest)(nil)
@@ -59,8 +59,7 @@ func (a AuthRequest) GetAuthTime() time.Time {
 }
 
 func (a AuthRequest) GetClientID() string {
-	//TODO implement me
-	panic("implement me")
+	return a.ApplicationID
 }
 
 func (a AuthRequest) GetCodeChallenge() *oidc.CodeChallenge {
@@ -79,8 +78,7 @@ func (a AuthRequest) GetRedirectURI() string {
 }
 
 func (a AuthRequest) GetResponseType() oidc.ResponseType {
-	//TODO implement me
-	panic("implement me")
+	return a.ResponseType
 }
 
 func (a AuthRequest) GetResponseMode() oidc.ResponseMode {
@@ -104,8 +102,7 @@ func (a AuthRequest) GetSubject() string {
 }
 
 func (a AuthRequest) Done() bool {
-	//TODO implement me
-	panic("implement me")
+	return a.done
 }
 
 func PromptToInternal(oidcPrompt oidc.SpaceDelimitedArray) []string {

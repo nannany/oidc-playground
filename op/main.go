@@ -16,6 +16,8 @@ var loginTmpl = template.Must(template.ParseFiles("templates/login.html"))
 
 var opSessionID = ""
 
+var authorizer = server2.Authorizer{}
+
 // 8080で動くサーバーを起動する
 func main() {
 	fmt.Println("openid provider started!")
@@ -134,6 +136,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("id:", id)
 	fmt.Println("username:", username)
 
+	// todo: username, password検証
+
 	// クッキーにセッションをセット
 	opSessionID = uuid.New().String()
 	http.SetCookie(w, &http.Cookie{ // クッキーをセット
@@ -145,5 +149,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	// rpにリダイレクト
+	authReq := server2.AuthRequests[id]
+	op.AuthResponse(authReq, authorizer, w, r)
 	http.Redirect(w, r, "http://localhost:8081/auth/callback", http.StatusFound)
 }

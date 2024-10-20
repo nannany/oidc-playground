@@ -25,6 +25,13 @@ func init() {
 		true,
 		[]oidc.ResponseType{oidc.ResponseTypeCode},
 	)
+	clients["web"] = NewClient(
+		op.ApplicationTypeWeb,
+		[]string{"http://localhost:8081/auth/callback"},
+		[]string{"http://localhost:8081/**"},
+		true,
+		[]oidc.ResponseType{oidc.ResponseTypeCode},
+	)
 }
 
 var _ op.Client = (*Client)(nil)

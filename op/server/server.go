@@ -57,7 +57,7 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 	request.ID = uuid.NewString()
 
 	// メモリにauthorization epに飛んできたリクエストを保存する
-	authRequests[request.ID] = request
+	AuthRequests[request.ID] = request
 
 	return op.NewRedirect(r.Client.LoginURL(request.ID)), nil
 }
@@ -78,6 +78,7 @@ func authRequestToInternal(authReq *oidc.AuthRequest, userID string) *AuthReques
 		ResponseType:  authReq.ResponseType,
 		ResponseMode:  authReq.ResponseMode,
 		Nonce:         authReq.Nonce,
+		done:          false,
 	}
 }
 
