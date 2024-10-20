@@ -109,3 +109,34 @@ func (m *MyServer) CodeExchange(ctx context.Context, r *op.ClientRequest[oidc.Ac
 	}
 	return op.NewResponse(resp), nil
 }
+
+func (m *MyServer) VerifyClient(ctx context.Context, r *op.Request[op.ClientCredentials]) (op.Client, error) {
+	if oidc.GrantType(r.Form.Get("grant_type")) == oidc.GrantTypeClientCredentials {
+		panic("not implemented")
+	}
+
+	if r.Data.ClientAssertionType == oidc.ClientAssertionTypeJWTAssertion {
+		panic("not implemented")
+	}
+	storage := Storage{}
+	client, err := storage.GetClientByClientID(ctx, r.Data.ClientID)
+	if err != nil {
+		return nil, oidc.ErrInvalidClient().WithParent(err)
+	}
+
+	switch client.AuthMethod() {
+	case oidc.AuthMethodNone:
+		return client, nil
+	case oidc.AuthMethodPrivateKeyJWT:
+		return nil, oidc.ErrInvalidClient().WithDescription("private_key_jwt not allowed for this client")
+	case oidc.AuthMethodPost:
+		panic("not implemented")
+	}
+
+	err = op.AuthorizeClientIDSecret(ctx, r.Data.ClientID, r.Data.ClientSecret, storage)
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}

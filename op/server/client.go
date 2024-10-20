@@ -59,8 +59,7 @@ func (c Client) ApplicationType() op.ApplicationType {
 }
 
 func (c Client) AuthMethod() oidc.AuthMethod {
-	//TODO implement me
-	panic("implement me")
+	return oidc.AuthMethodBasic
 }
 
 func (c Client) ResponseTypes() []oidc.ResponseType {
@@ -68,8 +67,8 @@ func (c Client) ResponseTypes() []oidc.ResponseType {
 }
 
 func (c Client) GrantTypes() []oidc.GrantType {
-	//TODO implement me
-	panic("implement me")
+	return []oidc.GrantType{oidc.GrantTypeCode}
+
 }
 
 func (c Client) LoginURL(s string) string {
