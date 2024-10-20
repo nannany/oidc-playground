@@ -14,6 +14,8 @@ type Client struct {
 	responseType      []oidc.ResponseType
 }
 
+var _ op.Client = (*Client)(nil)
+
 func NewClient(applicationType op.ApplicationType, redirectUris []string, redirectUrisGlobs []string, devMode bool, responseType []oidc.ResponseType) *Client {
 	return &Client{applicationType: applicationType, redirectUris: redirectUris, redirectUrisGlobs: redirectUrisGlobs, devMode: devMode, responseType: responseType}
 }
