@@ -109,8 +109,7 @@ func (c Client) IDTokenUserinfoClaimsAssertion() bool {
 }
 
 func (c Client) ClockSkew() time.Duration {
-	//TODO implement me
-	panic("implement me")
+	return 5 * time.Second
 }
 
 func (c Client) RedirectURIGlobs() []string {
