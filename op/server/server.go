@@ -30,6 +30,7 @@ func (m *MyServer) VerifyAuthRequest(ctx context.Context, r *op.Request[oidc.Aut
 	return &op.ClientRequest[oidc.AuthRequest]{
 		Request: r,
 		Client: NewClient(
+			"client_id",
 			op.ApplicationTypeWeb,
 			[]string{"http://localhost:8081/auth/callback"},
 			[]string{"http://localhost:8081/**"},

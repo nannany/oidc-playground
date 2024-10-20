@@ -51,8 +51,7 @@ func (a AuthRequest) GetAMR() []string {
 }
 
 func (a AuthRequest) GetAudience() []string {
-	//TODO implement me
-	panic("implement me")
+	return []string{a.ApplicationID}
 }
 
 func (a AuthRequest) GetAuthTime() time.Time {
@@ -95,8 +94,7 @@ func (a AuthRequest) GetState() string {
 }
 
 func (a AuthRequest) GetSubject() string {
-	//TODO implement me
-	panic("implement me")
+	return a.UserID
 }
 
 func (a AuthRequest) Done() bool {

@@ -7,6 +7,7 @@ import (
 )
 
 type Client struct {
+	ID                string
 	applicationType   op.ApplicationType
 	redirectUris      []string
 	redirectUrisGlobs []string
@@ -19,6 +20,7 @@ var clients = make(map[string]*Client)
 
 func init() {
 	clients["client_id"] = NewClient(
+		"client_id",
 		op.ApplicationTypeWeb,
 		[]string{"http://localhost:8081/auth/callback"},
 		[]string{"http://localhost:8081/**"},
@@ -26,6 +28,7 @@ func init() {
 		[]oidc.ResponseType{oidc.ResponseTypeCode},
 	)
 	clients["web"] = NewClient(
+		"web",
 		op.ApplicationTypeWeb,
 		[]string{"http://localhost:8081/auth/callback"},
 		[]string{"http://localhost:8081/**"},
@@ -36,13 +39,12 @@ func init() {
 
 var _ op.Client = (*Client)(nil)
 
-func NewClient(applicationType op.ApplicationType, redirectUris []string, redirectUrisGlobs []string, devMode bool, responseType []oidc.ResponseType) *Client {
-	return &Client{applicationType: applicationType, redirectUris: redirectUris, redirectUrisGlobs: redirectUrisGlobs, devMode: devMode, responseType: responseType}
+func NewClient(id string, applicationType op.ApplicationType, redirectUris []string, redirectUrisGlobs []string, devMode bool, responseType []oidc.ResponseType) *Client {
+	return &Client{ID: id, applicationType: applicationType, redirectUris: redirectUris, redirectUrisGlobs: redirectUrisGlobs, devMode: devMode, responseType: responseType}
 }
 
 func (c Client) GetID() string {
-	//TODO implement me
-	panic("implement me")
+	return c.ID
 }
 
 func (c Client) RedirectURIs() []string {
@@ -94,8 +96,10 @@ func (c Client) RestrictAdditionalIdTokenScopes() func(scopes []string) []string
 }
 
 func (c Client) RestrictAdditionalAccessTokenScopes() func(scopes []string) []string {
-	//TODO implement me
-	panic("implement me")
+	// 全て通す
+	return func(scopes []string) []string {
+		return scopes
+	}
 }
 
 func (c Client) IsScopeAllowed(scope string) bool {

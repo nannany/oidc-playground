@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"github.com/go-jose/go-jose/v4"
+	"github.com/google/uuid"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"github.com/zitadel/oidc/v3/pkg/op"
 	"time"
@@ -11,6 +12,26 @@ import (
 // Storage is a minimal implementation of op.Storage
 // zitadel に合わせるために作った
 type Storage struct {
+}
+
+func (s Storage) ValidateTokenExchangeRequest(ctx context.Context, request op.TokenExchangeRequest) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Storage) CreateTokenExchangeRequest(ctx context.Context, request op.TokenExchangeRequest) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Storage) GetPrivateClaimsFromTokenExchangeRequest(ctx context.Context, request op.TokenExchangeRequest) (claims map[string]any, err error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Storage) SetUserinfoFromTokenExchangeRequest(ctx context.Context, userinfo *oidc.UserInfo, request op.TokenExchangeRequest) error {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (s Storage) CreateAuthRequest(ctx context.Context, request *oidc.AuthRequest, s2 string) (op.AuthRequest, error) {
@@ -39,8 +60,34 @@ func (s Storage) DeleteAuthRequest(ctx context.Context, s2 string) error {
 }
 
 func (s Storage) CreateAccessToken(ctx context.Context, request op.TokenRequest) (accessTokenID string, expiration time.Time, err error) {
-	//TODO implement me
-	panic("implement me")
+	var applicationID string
+	switch req := request.(type) {
+	case *AuthRequest:
+		// if authenticated for an app (auth code / implicit flow) we must save the client_id to the token
+		applicationID = req.ApplicationID
+	case op.TokenExchangeRequest:
+		applicationID = req.GetClientID()
+	}
+
+	token, err := s.accessToken(applicationID, "", request.GetSubject(), request.GetAudience(), request.GetScopes())
+	if err != nil {
+		return "", time.Time{}, err
+	}
+	return token.ID, token.Expiration, nil
+}
+
+func (s *Storage) accessToken(applicationID, refreshTokenID, subject string, audience, scopes []string) (*Token, error) {
+	token := &Token{
+		ID:             uuid.NewString(),
+		ApplicationID:  applicationID,
+		RefreshTokenID: refreshTokenID,
+		Subject:        subject,
+		Audience:       audience,
+		Expiration:     time.Now().Add(5 * time.Minute),
+		Scopes:         scopes,
+	}
+	Tokens[token.ID] = token
+	return token, nil
 }
 
 func (s Storage) CreateAccessAndRefreshTokens(ctx context.Context, request op.TokenRequest, currentRefreshToken string) (accessTokenID string, newRefreshTokenID string, expiration time.Time, err error) {
@@ -108,8 +155,7 @@ func (s Storage) SetIntrospectionFromToken(ctx context.Context, userinfo *oidc.I
 }
 
 func (s Storage) GetPrivateClaimsFromScopes(ctx context.Context, userID, clientID string, scopes []string) (map[string]any, error) {
-	//TODO implement me
-	panic("implement me")
+	return map[string]any{}, nil
 }
 
 func (s Storage) GetKeyByIDAndClientID(ctx context.Context, keyID, clientID string) (*jose.JSONWebKey, error) {
@@ -128,3 +174,5 @@ func (s Storage) Health(ctx context.Context) error {
 }
 
 var _ op.Storage = (*Storage)(nil)
+
+var _ op.TokenExchangeStorage = (*Storage)(nil)
