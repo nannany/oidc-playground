@@ -2,7 +2,14 @@ services:
   openid-provider:
     image: golang:1.23
     build:
-      context: ../backend
-      dockerfile: ../backend/Dockerfile
+      context: ../op
+      dockerfile: ../op/Dockerfile
     ports:
         - 8080:8080
+  relying-party:
+    image: golang:1.23
+    build:
+      context: ../rp
+      dockerfile: ../rp/Dockerfile
+    ports:
+      - 8081:8081
