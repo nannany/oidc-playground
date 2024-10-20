@@ -1,18 +1,18 @@
 services:
   openid-provider:
-    image: golang:1.23
     build:
       context: ../op
       dockerfile: ../op/Dockerfile
+    image: openid-provider
     ports:
         - 8080:8080
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
   relying-party:
-    image: golang:1.23
     build:
       context: ../rp
       dockerfile: ../rp/Dockerfile
+    image: relying-party
     depends_on:
       openid-provider:
         condition: service_healthy
