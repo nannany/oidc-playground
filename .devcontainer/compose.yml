@@ -6,16 +6,12 @@ services:
     image: openid-provider
     ports:
         - 8080:8080
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
   relying-party:
     build:
       context: ../rp
       dockerfile: ../rp/Dockerfile
     image: relying-party
     depends_on:
-      openid-provider:
-        condition: service_healthy
+      - openid-provider
     ports:
       - 8081:8081
-    network_mode: "host"
