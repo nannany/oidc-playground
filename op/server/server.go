@@ -86,6 +86,6 @@ func (m *MyServer) Discovery(ctx context.Context, r *op.Request[struct{}]) (*op.
 	return op.NewResponse(&oidc.DiscoveryConfiguration{
 		Issuer:                "http://localhost:8080",
 		AuthorizationEndpoint: "http://localhost:8080/authorize",
-		TokenEndpoint:         "http://localhost:8080/token",
+		TokenEndpoint:         "http://localhost:8080/oauth/token",
 	}), nil
 }
