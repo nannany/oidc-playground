@@ -6,10 +6,15 @@ services:
       dockerfile: ../op/Dockerfile
     ports:
         - 8080:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
   relying-party:
     image: golang:1.23
     build:
       context: ../rp
       dockerfile: ../rp/Dockerfile
+    depends_on:
+      openid-provider:
+        condition: service_healthy
     ports:
       - 8081:8081
