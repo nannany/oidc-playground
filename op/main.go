@@ -117,7 +117,7 @@ func loginViewHandler(w http.ResponseWriter, r *http.Request) {
 	requestID := r.URL.Query().Get("request_id")
 	// IDに上記で取得したrequestIDをセット
 	data := map[string]string{
-		"RequestID": requestID,
+		"ID": requestID,
 	}
 
 	// テンプレートをレンダリング
