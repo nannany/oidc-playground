@@ -155,6 +155,7 @@ func (s Storage) SetIntrospectionFromToken(ctx context.Context, userinfo *oidc.I
 }
 
 func (s Storage) GetPrivateClaimsFromScopes(ctx context.Context, userID, clientID string, scopes []string) (map[string]any, error) {
+	// todo: ここの処理よくわかってない
 	return map[string]any{}, nil
 }
 
