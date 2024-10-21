@@ -88,6 +88,7 @@ func (m *MyServer) Discovery(ctx context.Context, r *op.Request[struct{}]) (*op.
 		Issuer:                "http://localhost:8080",
 		AuthorizationEndpoint: "http://localhost:8080/authorize",
 		TokenEndpoint:         "http://localhost:8080/oauth/token",
+		JwksURI:               "http://localhost:8080/jwks.json",
 	}), nil
 }
 
