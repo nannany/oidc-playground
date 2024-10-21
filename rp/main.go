@@ -13,6 +13,7 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"time"
 )
@@ -48,7 +49,8 @@ func main() {
 		}),
 	)
 	client := &http.Client{
-		Timeout: time.Minute,
+		Timeout:   time.Minute,
+		Transport: &LoggingRoundTripper{Transport: http.DefaultTransport},
 	}
 	// enable outgoing request logging
 	logging.EnableHTTPClient(client,
@@ -141,4 +143,32 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+type LoggingRoundTripper struct {
+	Transport http.RoundTripper
+}
+
+func (lrt *LoggingRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Log the request
+	reqDump, err := httputil.DumpRequestOut(req, true)
+	if err != nil {
+		log.Printf("Error dumping request: %v", err)
+	}
+	log.Printf("Request:\n%s", string(reqDump))
+
+	// Perform the request
+	resp, err := lrt.Transport.RoundTrip(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Log the response
+	respDump, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		log.Printf("Error dumping response: %v", err)
+	}
+	log.Printf("Response:\n%s", string(respDump))
+
+	return resp, nil
 }
