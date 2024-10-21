@@ -41,13 +41,11 @@ func (a AuthRequest) GetID() string {
 }
 
 func (a AuthRequest) GetACR() string {
-	//TODO implement me
-	panic("implement me")
+	return "urn:mace:incommon:iap:bronze"
 }
 
 func (a AuthRequest) GetAMR() []string {
-	//TODO implement me
-	panic("implement me")
+	return []string{"pwd"}
 }
 
 func (a AuthRequest) GetAudience() []string {
@@ -55,8 +53,7 @@ func (a AuthRequest) GetAudience() []string {
 }
 
 func (a AuthRequest) GetAuthTime() time.Time {
-	//TODO implement me
-	panic("implement me")
+	return a.authTime
 }
 
 func (a AuthRequest) GetClientID() string {
@@ -69,8 +66,7 @@ func (a AuthRequest) GetCodeChallenge() *oidc.CodeChallenge {
 }
 
 func (a AuthRequest) GetNonce() string {
-	//TODO implement me
-	panic("implement me")
+	return a.Nonce
 }
 
 func (a AuthRequest) GetRedirectURI() string {

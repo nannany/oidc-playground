@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-jose/go-jose/v4"
 	"github.com/google/uuid"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
@@ -12,6 +13,32 @@ import (
 // Storage is a minimal implementation of op.Storage
 // zitadel に合わせるために作った
 type Storage struct {
+}
+
+func (s Storage) SetUserinfoFromRequest(ctx context.Context, userInfo *oidc.UserInfo, request op.IDTokenRequest, scopes []string) error {
+	user := Users[request.GetSubject()]
+	if user == nil {
+		return fmt.Errorf("user not found")
+	}
+	for _, scope := range scopes {
+		switch scope {
+		case oidc.ScopeOpenID:
+			userInfo.Subject = user.ID
+		case oidc.ScopeEmail:
+			userInfo.Email = user.Email
+			userInfo.EmailVerified = oidc.Bool(user.EmailVerified)
+		case oidc.ScopeProfile:
+			userInfo.PreferredUsername = user.Username
+			userInfo.Name = user.FirstName + " " + user.LastName
+			userInfo.FamilyName = user.LastName
+			userInfo.GivenName = user.FirstName
+			userInfo.Locale = oidc.NewLocale(user.PreferredLanguage)
+		case oidc.ScopePhone:
+			userInfo.PhoneNumber = user.Phone
+			userInfo.PhoneNumberVerified = user.PhoneVerified
+		}
+	}
+	return nil
 }
 
 func (s Storage) ValidateTokenExchangeRequest(ctx context.Context, request op.TokenExchangeRequest) error {
@@ -116,8 +143,7 @@ func (s Storage) GetRefreshTokenInfo(ctx context.Context, clientID string, token
 }
 
 func (s Storage) SigningKey(ctx context.Context) (op.SigningKey, error) {
-	//TODO implement me
-	panic("implement me")
+	return MySigningKey, nil
 }
 
 func (s Storage) SignatureAlgorithms(ctx context.Context) ([]jose.SignatureAlgorithm, error) {
@@ -140,8 +166,7 @@ func (s Storage) AuthorizeClientIDSecret(ctx context.Context, clientID, clientSe
 }
 
 func (s Storage) SetUserinfoFromScopes(ctx context.Context, userinfo *oidc.UserInfo, userID, clientID string, scopes []string) error {
-	//TODO implement me
-	panic("implement me")
+	return nil
 }
 
 func (s Storage) SetUserinfoFromToken(ctx context.Context, userinfo *oidc.UserInfo, tokenID, subject, origin string) error {
@@ -177,3 +202,5 @@ func (s Storage) Health(ctx context.Context) error {
 var _ op.Storage = (*Storage)(nil)
 
 var _ op.TokenExchangeStorage = (*Storage)(nil)
+
+var _ op.CanSetUserinfoFromRequest = (*Storage)(nil)

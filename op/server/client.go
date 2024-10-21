@@ -82,8 +82,7 @@ func (c Client) AccessTokenType() op.AccessTokenType {
 }
 
 func (c Client) IDTokenLifetime() time.Duration {
-	//TODO implement me
-	panic("implement me")
+	return 5 * time.Minute
 }
 
 func (c Client) DevMode() bool {
@@ -91,8 +90,10 @@ func (c Client) DevMode() bool {
 }
 
 func (c Client) RestrictAdditionalIdTokenScopes() func(scopes []string) []string {
-	//TODO implement me
-	panic("implement me")
+	// 全て通す
+	return func(scopes []string) []string {
+		return scopes
+	}
 }
 
 func (c Client) RestrictAdditionalAccessTokenScopes() func(scopes []string) []string {
@@ -108,8 +109,7 @@ func (c Client) IsScopeAllowed(scope string) bool {
 }
 
 func (c Client) IDTokenUserinfoClaimsAssertion() bool {
-	//TODO implement me
-	panic("implement me")
+	return true
 }
 
 func (c Client) ClockSkew() time.Duration {
