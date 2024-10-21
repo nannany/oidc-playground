@@ -24,6 +24,7 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(middleware.SessionCheck)
+	router.Use(middleware.IssuerSetter)
 
 	router.Get("/", homeViewHandler)
 	router.Get("/login", loginViewHandler)
