@@ -150,6 +150,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// rpにリダイレクト
 	authReq := server2.AuthRequests[id]
+	authReq.UserID = "21e204ab-b1f4-4a37-b4cf-28cffabdfe49" // 可変に
 	op.AuthResponse(authReq, authorizer, w, r)
 	http.Redirect(w, r, "http://localhost:8081/auth/callback", http.StatusFound)
 }

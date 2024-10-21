@@ -81,9 +81,10 @@ func (s Storage) SaveAuthCode(ctx context.Context, authRequestID string, code st
 	return nil
 }
 
-func (s Storage) DeleteAuthRequest(ctx context.Context, s2 string) error {
-	//TODO implement me
-	panic("implement me")
+func (s Storage) DeleteAuthRequest(ctx context.Context, authReqID string) error {
+	AuthRequests[authReqID] = nil
+
+	return nil
 }
 
 func (s Storage) CreateAccessToken(ctx context.Context, request op.TokenRequest) (accessTokenID string, expiration time.Time, err error) {
