@@ -114,25 +114,6 @@ func main() {
 
 }
 
-func callbackHandler() func(http.ResponseWriter, *http.Request) {
-
-	// とりあえず、認証okとして、セッションのセットとリダイレクト
-	return func(w http.ResponseWriter, r *http.Request) {
-		// クッキーにセッションをセット
-		sessionID = uuid.New().String()
-		http.SetCookie(w, &http.Cookie{ // クッキーをセット
-			Name:     "rp-session",
-			Value:    sessionID,
-			Secure:   false,
-			HttpOnly: true,
-			Path:     "/",
-		})
-		// その後、セッションをセットして、リダイレクト
-		http.Redirect(w, r, "/", http.StatusFound)
-	}
-
-}
-
 func handler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]string{
 		"Title":   "Go Template Example",
