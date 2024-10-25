@@ -49,14 +49,18 @@ func jwksHandler(writer http.ResponseWriter, request *http.Request) {
 	w := writer
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write([]byte(`
-{
-  "kty": "RSA",
-  "n": "5srSQZgeolXrjpTvw1OuHxBrHiBKnBEOxeeOgBDaB_61Dm1nr39rnbjd7CmuVel9o1CQof26741AoqxFxDAzc1KtnG2pysT32kcKVLBYQYSyXl860jrMXBgs-eR2Gz_YJl5UmmMvexYmnJ1CAhDUxMK23MeeR0_llTUIRDPrE1JFgE033gvUF8PfNxSUzeI5FHu6PjbLrwiatg3sOhUAkxQhC5IPGJoSVuS0_taU72lRoSEKT2Ij32HnhLWx7dAZ_PXcSZGU3L86AGksenF-bfDes6_OXIWkCBtlcpXGo51WNWzmVgX1KBVe48SCWwO9qIr8F6oRNe0zxcIvaSWHKpfMw711uF8OT8XpF9jOvlMxXGOASpAJ8eDVh4DK4YHfG4GFg4mlzQ6wr7_MHl8yXLj5v_-03XS3-AzskLs86haHi91U6zoA2zGkQ6f_KsBa5Mi7Yn9XkjT3LqIdE2Eq6PzLkXa0_BPyoA4yu1AQiZ0UneNCZpxqD_1UVzU2ZmoyvNprAd1Y5RK7pimWx8NAEkcZfLg3OjsQvxho4l0YeyqZPrnmYy2G61BvCWkgzpjoHIxn9IJgdXsS80ugJKOWF-hfKUYwyW5iWuO285WvZbF_jSoqfGvKk21bsyf5_4Pj0i_5lY5OmTrYnDHhGKNcO_FrZXKHvEVTLFC7h1FJOo8",
-  "e": "AQAB",
-  "alg": "RS256",
-  "use": "sig",
-  "kid": "avUja_OmJ6soJ6KUnmM_IWoPLxny3Ph-uWLZnFxrpuE"
-}
+    {
+    	"keys": [
+    		{
+    			"kty": "RSA",
+    			"n": "5srSQZgeolXrjpTvw1OuHxBrHiBKnBEOxeeOgBDaB_61Dm1nr39rnbjd7CmuVel9o1CQof26741AoqxFxDAzc1KtnG2pysT32kcKVLBYQYSyXl860jrMXBgs-eR2Gz_YJl5UmmMvexYmnJ1CAhDUxMK23MeeR0_llTUIRDPrE1JFgE033gvUF8PfNxSUzeI5FHu6PjbLrwiatg3sOhUAkxQhC5IPGJoSVuS0_taU72lRoSEKT2Ij32HnhLWx7dAZ_PXcSZGU3L86AGksenF-bfDes6_OXIWkCBtlcpXGo51WNWzmVgX1KBVe48SCWwO9qIr8F6oRNe0zxcIvaSWHKpfMw711uF8OT8XpF9jOvlMxXGOASpAJ8eDVh4DK4YHfG4GFg4mlzQ6wr7_MHl8yXLj5v_-03XS3-AzskLs86haHi91U6zoA2zGkQ6f_KsBa5Mi7Yn9XkjT3LqIdE2Eq6PzLkXa0_BPyoA4yu1AQiZ0UneNCZpxqD_1UVzU2ZmoyvNprAd1Y5RK7pimWx8NAEkcZfLg3OjsQvxho4l0YeyqZPrnmYy2G61BvCWkgzpjoHIxn9IJgdXsS80ugJKOWF-hfKUYwyW5iWuO285WvZbF_jSoqfGvKk21bsyf5_4Pj0i_5lY5OmTrYnDHhGKNcO_FrZXKHvEVTLFC7h1FJOo8",
+    			"e": "AQAB",
+    			"alg": "RS256",
+    			"use": "sig",
+    			"kid": "avUja_OmJ6soJ6KUnmM_IWoPLxny3Ph-uWLZnFxrpuE"
+    		}
+    	]
+    }
 `))
 }
 
