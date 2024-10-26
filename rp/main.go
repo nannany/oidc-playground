@@ -129,9 +129,12 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	// リクエストコンテキストからuserIDを取得
+	userID := r.Context().Value("userID").(string)
+
 	data := map[string]string{
-		"Title":   "Go Template Example",
-		"Message": "This is a static HTML page rendered with Go!",
+		"Title":   "RP Page",
+		"Message": "User ID: " + userID,
 	}
 
 	// テンプレートをレンダリング
