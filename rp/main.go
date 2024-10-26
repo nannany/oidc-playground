@@ -131,10 +131,11 @@ func main() {
 func handler(w http.ResponseWriter, r *http.Request) {
 	// リクエストコンテキストからuserIDを取得
 	userID := r.Context().Value("userID").(string)
+	user := domain.Users[userID]
 
 	data := map[string]string{
 		"Title":   "RP Page",
-		"Message": "User ID: " + userID,
+		"Message": "Hello, " + user.GivenName + " " + user.FamilyName,
 	}
 
 	// テンプレートをレンダリング
