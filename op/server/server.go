@@ -45,13 +45,6 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 
 	// todo: validate request
 
-	// prompt=noneの場合は、login_requiredなことをrpに知らせるべくredirectする
-	if len(authReq.Prompt) == 1 && authReq.Prompt[0] == "none" {
-		// With prompt=none, there is no way for the user to log in
-		// so return error right away.
-		return nil, oidc.ErrLoginRequired()
-	}
-
 	// userIDはtoken hint があれば取得できる
 	request := authRequestToInternal(authReq, "")
 
