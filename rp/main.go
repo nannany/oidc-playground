@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"rp/domain"
 	"time"
 )
 
@@ -93,6 +94,17 @@ func main() {
 
 	// rp.CodeExchangeCallback を定義
 	f := func(w http.ResponseWriter, r *http.Request, tokens *oidc.Tokens[*oidc.IDTokenClaims], state string, rp rp.RelyingParty) {
+		// tokensの情報から、userをcreate
+		if domain.Users[tokens.IDTokenClaims.Subject] == nil {
+			domain.Users[tokens.IDTokenClaims.Subject] = &domain.User{
+				ID:            tokens.IDTokenClaims.Subject,
+				Email:         tokens.IDTokenClaims.Email,
+				EmailVerified: bool(tokens.IDTokenClaims.EmailVerified),
+				FamilyName:    tokens.IDTokenClaims.FamilyName,
+				GivenName:     tokens.IDTokenClaims.GivenName,
+			}
+		}
+
 		// とりあえず、認証okとして、セッションのセットとリダイレクト
 		sessionID = uuid.New().String()
 		http.SetCookie(w, &http.Cookie{ // クッキーをセット
