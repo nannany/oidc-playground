@@ -16,6 +16,8 @@ import (
 	"net/http/httputil"
 	"os"
 	"rp/domain"
+	"rp/middleware"
+	"rp/session"
 	"time"
 )
 
@@ -31,7 +33,7 @@ var (
 // ポートが8081で動くサーバーを起動する
 func main() {
 	// ハンドラを設定
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", middleware.SessionCheck(handler))
 
 	clientID := "web"
 	clientSecret := "secret"
@@ -105,14 +107,14 @@ func main() {
 			}
 		}
 
-		// とりあえず、認証okとして、セッションのセットとリダイレクト
-		sessionID = uuid.New().String()
-		http.SetCookie(w, &http.Cookie{ // クッキーをセット
-			Name:     "rp-session",
-			Value:    sessionID,
-			Secure:   false,
-			HttpOnly: true,
-		})
+		rpSession, _ := session.Store.Get(r, "rp-session")
+		rpSession.Values["user"] = tokens.IDTokenClaims.Subject
+		err = rpSession.Save(r, w)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
 
