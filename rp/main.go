@@ -82,10 +82,7 @@ func main() {
 		return uuid.New().String()
 	}
 
-	urlOptions := []rp.URLParamOpt{
-		rp.WithPromptURLParam("Welcome back!"),
-	}
-
+	var urlOptions []rp.URLParamOpt
 	urlOptions = append(urlOptions, rp.WithResponseModeURLParam(oidc.ResponseMode(responseMode)))
 
 	http.Handle("/login", rp.AuthURLHandler(
