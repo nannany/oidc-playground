@@ -50,7 +50,11 @@ func autoLoginHandler(w http.ResponseWriter, r *http.Request) {
 	authReqID := r.URL.Query().Get("auth_req_id")
 	authReq := server2.AuthRequests[authReqID]
 
-	op.AuthResponse(authReq, authorizer, w, r)
+	sid := r.Context().Value("sid").(string)
+
+	copiedAuthReq := authReq.DeepCopy()
+	copiedAuthReq.CallbackURI = authReq.CallbackURI + "?session_state=" + sid
+	op.AuthResponse(copiedAuthReq, authorizer, w, r)
 }
 
 func jwksHandler(writer http.ResponseWriter, request *http.Request) {

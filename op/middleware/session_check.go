@@ -20,6 +20,12 @@ func SessionCheck(next http.Handler) http.Handler {
 			r = r.WithContext(ctx)
 		}
 
+		sid := opSession.Values["sid"]
+		if sid != nil {
+			ctx = context.WithValue(ctx, "sid", sid)
+			r = r.WithContext(ctx)
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }
