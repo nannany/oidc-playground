@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"myoidc/session"
 	"net/http"
 )
 
@@ -12,10 +13,10 @@ func SessionCheck(next http.Handler) http.Handler {
 		// なければ次のハンドラを呼び出す
 		ctx := r.Context()
 		// cookieからセッションIDを取得
-
-		cookie, err := r.Cookie("op-session")
-		if err == nil {
-			ctx = context.WithValue(ctx, "sessionID", cookie.Value)
+		opSession, _ := session.Store.Get(r, "op-session")
+		userID := opSession.Values["userID"]
+		if userID != nil {
+			ctx = context.WithValue(ctx, "userID", userID)
 			r = r.WithContext(ctx)
 		}
 

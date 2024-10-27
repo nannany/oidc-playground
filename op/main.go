@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/zitadel/oidc/v3/pkg/op"
 	"html/template"
 	"myoidc/middleware"
 	server2 "myoidc/server"
+	"myoidc/session"
 	"net/http"
 )
 
@@ -160,14 +160,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// todo: username, password検証
 
 	// クッキーにセッションをセット
-	opSessionID = uuid.New().String()
-	http.SetCookie(w, &http.Cookie{ // クッキーをセット
-		Name:     "op-session",
-		Value:    opSessionID,
-		Secure:   false,
-		HttpOnly: true,
-		Path:     "/",
-	})
+	opSession, _ := session.Store.Get(r, "op-session")
+	opSession.Values["userID"] = "21e204ab-b1f4-4a37-b4cf-28cffabdfe49"
+	err := opSession.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	// rpにリダイレクト
 	authReq := server2.AuthRequests[id]
