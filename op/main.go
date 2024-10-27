@@ -14,8 +14,6 @@ import (
 var homeTmpl = template.Must(template.ParseFiles("templates/home.html"))
 var loginTmpl = template.Must(template.ParseFiles("templates/login.html"))
 
-var opSessionID = ""
-
 var authorizer = server2.Authorizer{}
 
 // 8080で動くサーバーを起動する
@@ -117,16 +115,14 @@ func checkSessionIframeHandler(w http.ResponseWriter, r *http.Request) {
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	// セッションを削除する
-	opSessionID = ""
-	http.SetCookie(w, &http.Cookie{ // クッキーをセット
-		Name:     "op-session",
-		Value:    opSessionID,
-		Secure:   false,
-		HttpOnly: true,
-		Path:     "/",
-	})
+	opSession, _ := session.Store.New(r, "op-session")
+	opSession.Values["userID"] = ""
+	err := opSession.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// rpにリダイレクト
 	http.Redirect(w, r, "http://localhost:8080/", http.StatusFound)
 }
 

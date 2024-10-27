@@ -56,7 +56,7 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 	// promptがnoneまたはpromptが提供されていない場合は、コンテキストにuserIDがあればcallbackさせる
 	if authReq.Prompt == nil || len(authReq.Prompt) == 0 || authReq.Prompt[0] == oidc.PromptNone {
 		userID := ctx.Value("userID")
-		if userID != nil {
+		if userID != nil && userID != "" {
 			request.UserID = userID.(string)
 			// https://github.com/zitadel/oidc/discussions/669
 			return op.NewRedirect("http://localhost:8080/auto-login?auth_req_id=" + request.ID), nil
