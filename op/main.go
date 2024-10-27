@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/zitadel/oidc/v3/pkg/op"
 	"html/template"
 	"myoidc/middleware"
@@ -167,6 +168,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// クッキーにセッションをセット
 	opSession, _ := session.Store.Get(r, "op-session")
 	opSession.Values["userID"] = "21e204ab-b1f4-4a37-b4cf-28cffabdfe49"
+	sid := uuid.New().String()
+	opSession.Values["sid"] = sid
 	err := opSession.Save(r, w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -179,9 +182,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	authReq.UserID = "21e204ab-b1f4-4a37-b4cf-28cffabdfe49" // 可変に
 	// authReqののリダイレクトuriに session_state をセット
 	// 本当はこんなことしたくないけど、これ以外zitadelを使ってどうやるのかわからん
-	fmt.Printf("opSession: %+v\n", opSession.ID)
 	// authReqのディープコピーを作る
 	copyAuthReq := authReq.DeepCopy()
-	copyAuthReq.CallbackURI = authReq.CallbackURI + "?session_state=" + opSession.ID
+	copyAuthReq.CallbackURI = authReq.CallbackURI + "?session_state=" + sid
 	op.AuthResponse(copyAuthReq, authorizer, w, r)
 }
