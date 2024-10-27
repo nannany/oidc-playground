@@ -118,3 +118,16 @@ func MaxAgeToInternal(maxAge *uint) *time.Duration {
 	dur := time.Duration(*maxAge) * time.Second
 	return &dur
 }
+
+func (a AuthRequest) DeepCopy() AuthRequest {
+	var cp AuthRequest
+	cp = a
+	cp.Prompt = make([]string, len(a.Prompt))
+	copy(cp.Prompt, a.Prompt)
+	cp.Scopes = make([]string, len(a.Scopes))
+	copy(cp.Scopes, a.Scopes)
+	cp.UiLocales = make([]language.Tag, len(a.UiLocales))
+	copy(cp.UiLocales, a.UiLocales)
+
+	return cp
+}

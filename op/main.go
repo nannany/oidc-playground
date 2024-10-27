@@ -172,9 +172,16 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	_ = session.Store.Save(r, w, opSession)
 
 	// rpにリダイレクト
 	authReq := server2.AuthRequests[id]
 	authReq.UserID = "21e204ab-b1f4-4a37-b4cf-28cffabdfe49" // 可変に
-	op.AuthResponse(authReq, authorizer, w, r)
+	// authReqののリダイレクトuriに session_state をセット
+	// 本当はこんなことしたくないけど、これ以外zitadelを使ってどうやるのかわからん
+	fmt.Printf("opSession: %+v\n", opSession.ID)
+	// authReqのディープコピーを作る
+	copyAuthReq := authReq.DeepCopy()
+	copyAuthReq.CallbackURI = authReq.CallbackURI + "?session_state=" + opSession.ID
+	op.AuthResponse(copyAuthReq, authorizer, w, r)
 }
