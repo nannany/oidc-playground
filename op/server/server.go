@@ -58,6 +58,7 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 		userID := ctx.Value("userID")
 		if userID != nil {
 			request.UserID = userID.(string)
+			// https://github.com/zitadel/oidc/discussions/669
 			return op.NewRedirect("http://localhost:8080/auto-login?auth_req_id=" + request.ID), nil
 		}
 	}
