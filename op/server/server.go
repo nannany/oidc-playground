@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/zitadel/oidc/v3/pkg/oidc"
 	"github.com/zitadel/oidc/v3/pkg/op"
@@ -54,18 +53,12 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 	// メモリにauthorization epに飛んできたリクエストを保存する
 	AuthRequests[request.ID] = request
 
-	fmt.Printf("authReq: %v\n", authReq)
-	fmt.Printf("prompt: %v\n", authReq.Prompt)
-
 	// promptがnoneまたはpromptが提供されていない場合は、コンテキストにuserIDがあればcallbackさせる
 	if authReq.Prompt == nil || len(authReq.Prompt) == 0 || authReq.Prompt[0] == oidc.PromptNone {
-		fmt.Printf("星")
-		// コンテキストから userID を取得
-		fmt.Printf("ctx: %v\n", ctx)
-
 		userID := ctx.Value("userID")
 		if userID != nil {
-			return op.NewRedirect("http://localhost:8080/auto-login"), nil
+			request.UserID = userID.(string)
+			return op.NewRedirect("http://localhost:8080/auto-login?auth_req_id=" + request.ID), nil
 		}
 	}
 

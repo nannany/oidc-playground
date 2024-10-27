@@ -30,6 +30,7 @@ func main() {
 	router.Get("/login", loginViewHandler)
 	router.Get("/check_session_iframe", checkSessionIframeHandler)
 	router.Get("/jwks.json", jwksHandler)
+	router.Get("/auto-login", autoLoginHandler)
 	router.Post("/login/username", loginHandler)
 	router.Post("/logout", logoutHandler)
 
@@ -43,6 +44,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func autoLoginHandler(w http.ResponseWriter, r *http.Request) {
+	// クエリパラメータからauthReqIDを取得
+	authReqID := r.URL.Query().Get("auth_req_id")
+	authReq := server2.AuthRequests[authReqID]
+
+	op.AuthResponse(authReq, authorizer, w, r)
+	http.Redirect(w, r, "http://localhost:8081/auth/callback", http.StatusFound)
 }
 
 func jwksHandler(writer http.ResponseWriter, request *http.Request) {
