@@ -133,7 +133,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func homeViewHandler(w http.ResponseWriter, r *http.Request) {
-	sessionID, ok := r.Context().Value("sessionID").(string)
+	sessionID, ok := r.Context().Value("sid").(string)
 	if !ok || sessionID == "" {
 		sessionID = "empty"
 	}
