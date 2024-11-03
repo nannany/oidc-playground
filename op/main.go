@@ -129,6 +129,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	// cookie から op_session_state を削除する
 	w.Header().Set("Set-Cookie", "op_session_state=; Path=/; Secure; SameSite=None; Max-Age=0")
+	w.Header().Set("Set-Cookie", "op-session=; Path=/; Secure; SameSite=None; Max-Age=0")
 	http.Redirect(w, r, "http://localhost:8080/", http.StatusFound)
 }
 
