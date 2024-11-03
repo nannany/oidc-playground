@@ -127,6 +127,8 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// cookie から op_session_state を削除する
+	w.Header().Set("Set-Cookie", "op_session_state=; Path=/; Secure; SameSite=None; Max-Age=0")
 	http.Redirect(w, r, "http://localhost:8080/", http.StatusFound)
 }
 
@@ -189,5 +191,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// authReqのディープコピーを作る
 	copyAuthReq := authReq.DeepCopy()
 	copyAuthReq.CallbackURI = authReq.CallbackURI + "?session_state=" + sid
+
+	// cookie にop_session_stateをセットする
+	w.Header().Set("Set-Cookie", "op_session_state="+sid+"; Path=/; Secure; SameSite=None")
 	op.AuthResponse(copyAuthReq, authorizer, w, r)
 }
