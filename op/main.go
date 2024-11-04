@@ -77,7 +77,7 @@ func jwksHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func checkSessionIframeHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "static/check_session.js")
+	http.ServeFile(w, r, "static/check_session.html")
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {

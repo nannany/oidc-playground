@@ -13,9 +13,17 @@
         var opFrameId = "op";
         var timerID;
 
+        console.log(window.frames)
+
         function check_session()   {
-            var win = window.frames[opFrameId].contentWindow
-            win.postMessage(mes, targetOrigin);
+            console.log("check_session")
+            try {
+                var win = window.frames[opFrameId].contentWindow
+                win.postMessage(mes, targetOrigin);
+            } catch (e) {
+                console.log("error")
+            }
+
         }
 
         function setTimer() {
