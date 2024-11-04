@@ -15,22 +15,14 @@
 
             console.log(client_id, session_state);
 
-            // if message is syntactically invalid
-            //     postMessage('error', e.origin) and return
-
-            // if message comes an unexpected origin
-            //     postMessage('error', e.origin) and return
-
-            // get_op_user_agent_state() is an OP defined function
-            // that returns the User Agent's login status at the OP.
-            // How it is done is entirely up to the OP.
-            var opuas = get_op_user_agent_state();
+            // openid provider の cookie から op_session_state を取得
+            var op_session_state = document.cookie.split('; ').find(row => row.startsWith('op_session_state'));
+            var opuas = op_session_state;
 
             // Here, the session_state is calculated in this particular way,
             // but it is entirely up to the OP how to do it under the
             // requirements defined in this specification.
-            var ss = CryptoJS.SHA256(client_id + ' ' + e.origin + ' ' +
-                opuas + ' ' + salt) + "." + salt;
+            var ss = opuas;
 
             var stat = '';
             if (session_state === ss) {
@@ -39,6 +31,7 @@
                 stat = 'changed';
             }
 
+            console.log(stat)
             e.source.postMessage(stat, e.origin);
         };
     </script>
