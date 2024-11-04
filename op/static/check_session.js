@@ -2,9 +2,12 @@ window.addEventListener("message", receiveMessage, false);
 
 function receiveMessage(e) { // e.data has client_id and session_state
 
+    console.log('op iframe received message from RP iframe');
+
     var client_id = e.data.substr(0, e.data.lastIndexOf(' '));
     var session_state = e.data.substr(e.data.lastIndexOf(' ') + 1);
-    var salt = session_state.split('.')[1];
+
+    console.log(client_id, session_state);
 
     // if message is syntactically invalid
     //     postMessage('error', e.origin) and return

@@ -6,13 +6,15 @@
     <title>{{ .Title }}</title>
     <script>
         var stat = "unchanged";
+        // cookie から rp-session-state を取得
+        var session_state = document.cookie.split('; ').find(row => row.startsWith('rp_session_state'))
         var mes = "web" + " " + session_state;
-        var targetOrigin = "http://localhost:8080"; // Validates origin
+        var targetOrigin = "http://localhost:8080"; // openid providerのorigin
         var opFrameId = "op";
         var timerID;
 
         function check_session()   {
-            var win = window.parent.frames[opFrameId].contentWindow
+            var win = window.frames[opFrameId].contentWindow
             win.postMessage(mes, targetOrigin);
         }
 
@@ -41,6 +43,6 @@
 <body>
 <h1>{{ .Message }}</h1>
 
-<iframe src="http://localhost:8080/check_session_iframe" style="display:none"></iframe>
+<iframe id="op" src="http://localhost:8080/check_session_iframe" style="display:none"></iframe>
 </body>
 </html>
