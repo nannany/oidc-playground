@@ -96,16 +96,16 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		Name:     "op_session_state",
 		Value:    "",
 		Path:     "/",
-		Secure:   true, // 本番環境であればtrue、ローカル開発ならfalse
-		SameSite: http.SameSiteNoneMode,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
 		MaxAge:   1,
 	})
 	http.SetCookie(w, &http.Cookie{
 		Name:     "op-session",
 		Value:    "",
 		Path:     "/",
-		Secure:   true, // 本番環境であればtrue、ローカル開発ならfalse
-		SameSite: http.SameSiteNoneMode,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
 		MaxAge:   1,
 	})
 	http.Redirect(w, r, "http://op.host:8080/", http.StatusFound)
@@ -172,6 +172,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	copyAuthReq.CallbackURI = authReq.CallbackURI + "?session_state=" + sid
 
 	// cookie にop_session_stateをセットする
-	w.Header().Set("Set-Cookie", "op_session_state="+sid+"; Path=/; Secure; SameSite=None")
+	w.Header().Set("Set-Cookie", "op_session_state="+sid+"; Path=/; SameSite=Strict;")
 	op.AuthResponse(copyAuthReq, authorizer, w, r)
 }
