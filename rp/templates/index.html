@@ -7,7 +7,7 @@
     <script>
         var stat = "unchanged";
         // cookie から rp-session-state を取得
-        var session_state = document.cookie.split('; ').find(row => row.startsWith('rp_session_state'))
+        var session_state = document.cookie.split('; ').find(row => row.startsWith('rp_session_state')).split('=')[1];
         var mes = "web" + " " + session_state;
         var targetOrigin = "http://localhost:8080"; // openid providerのorigin
         var opFrameId = "op";
