@@ -10,13 +10,10 @@
 
             console.log('op iframe received message from RP iframe');
 
-            var client_id = e.data.substr(0, e.data.lastIndexOf(' '));
             var session_state = e.data.substr(e.data.lastIndexOf(' ') + 1);
 
-            console.log(client_id, session_state);
-
             // openid provider の cookie から op_session_state を取得
-            var op_session_state = document.cookie.split('; ').find(row => row.startsWith('op_session_state'));
+            var op_session_state = document.cookie.split('; ').find(row => row.startsWith('op_session_state')).split('=')[1];
             var opuas = op_session_state;
 
             // Here, the session_state is calculated in this particular way,
