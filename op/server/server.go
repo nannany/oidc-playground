@@ -59,7 +59,7 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 		if userID != nil && userID != "" {
 			request.UserID = userID.(string)
 			// https://github.com/zitadel/oidc/discussions/669
-			return op.NewRedirect("http://localhost:8080/auto-login?auth_req_id=" + request.ID), nil
+			return op.NewRedirect("http://op.host:8080/auto-login?auth_req_id=" + request.ID), nil
 		}
 	}
 
@@ -88,10 +88,10 @@ func authRequestToInternal(authReq *oidc.AuthRequest, userID string) *AuthReques
 
 func (m *MyServer) Discovery(ctx context.Context, r *op.Request[struct{}]) (*op.Response, error) {
 	return op.NewResponse(&oidc.DiscoveryConfiguration{
-		Issuer:                "http://localhost:8080",
-		AuthorizationEndpoint: "http://localhost:8080/authorize",
-		TokenEndpoint:         "http://localhost:8080/oauth/token",
-		JwksURI:               "http://localhost:8080/jwks.json",
+		Issuer:                "http://op.host:8080",
+		AuthorizationEndpoint: "http://op.host:8080/authorize",
+		TokenEndpoint:         "http://op.host:8080/oauth/token",
+		JwksURI:               "http://op.host:8080/jwks.json",
 	}), nil
 }
 

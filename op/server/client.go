@@ -74,7 +74,7 @@ func (c Client) GrantTypes() []oidc.GrantType {
 }
 
 func (c Client) LoginURL(s string) string {
-	return "http://localhost:8080/login?request_id=" + s
+	return "http://op.host:8080/login?request_id=" + s
 }
 
 func (c Client) AccessTokenType() op.AccessTokenType {

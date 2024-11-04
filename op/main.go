@@ -107,7 +107,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteNoneMode,
 		MaxAge:   1,
 	})
-	http.Redirect(w, r, "http://localhost:8080/", http.StatusFound)
+	http.Redirect(w, r, "http://op.host:8080/", http.StatusFound)
 }
 
 func homeViewHandler(w http.ResponseWriter, r *http.Request) {

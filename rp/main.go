@@ -37,7 +37,7 @@ func main() {
 
 	clientID := "web"
 	clientSecret := "secret"
-	issuer := "http://localhost:8080"
+	issuer := "http://op.host:8080"
 	port := "8081"
 	scopes := []string{oidc.ScopeOpenID, oidc.ScopeProfile, oidc.ScopeEmail}
 	responseMode := "query"
@@ -117,6 +117,7 @@ func main() {
 		if sessionState != "" {
 			w.Header().Set("Set-Cookie", fmt.Sprintf("rp_session_state=%s; Path=/;", sessionState))
 		}
+		fmt.Print("callback success")
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
 
@@ -132,12 +133,27 @@ func main() {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	// リクエストコンテキストからuserIDを取得
-	userID := r.Context().Value("userID").(string)
-	user := domain.Users[userID]
+	userID, ok := r.Context().Value("userID").(string)
+	var user *domain.User
+	if !ok {
+		user = nil
+	} else {
+		user = domain.Users[userID]
+	}
+
+	fmt.Sprintf("user: %v", user)
+
+	var message string
+
+	if user == nil {
+		message = "Hello, Guest"
+	} else {
+		message = "Hello, " + user.GivenName + " " + user.FamilyName
+	}
 
 	data := map[string]string{
 		"Title":   "RP Page",
-		"Message": "Hello, " + user.GivenName + " " + user.FamilyName,
+		"Message": message,
 	}
 
 	// テンプレートをレンダリング
