@@ -22,6 +22,7 @@ func main() {
 	fmt.Println("openid provider started!")
 
 	router := chi.NewRouter()
+	router.Use(middleware.LoggingMiddleware)
 	router.Use(middleware.SessionCheck)
 	router.Use(middleware.IssuerSetter)
 
