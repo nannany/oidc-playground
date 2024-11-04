@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/zitadel/logging"
@@ -32,8 +33,12 @@ var (
 
 // ポートが8081で動くサーバーを起動する
 func main() {
+
+	router := chi.NewRouter()
+	router.Use(middleware.LoggingMiddleware)
+
 	// ハンドラを設定
-	http.HandleFunc("/", middleware.SessionCheck(handler))
+	router.Get("/", middleware.SessionCheck(handler))
 
 	clientID := "web"
 	clientSecret := "secret"
@@ -85,7 +90,7 @@ func main() {
 	var urlOptions []rp.URLParamOpt
 	urlOptions = append(urlOptions, rp.WithResponseModeURLParam(oidc.ResponseMode(responseMode)))
 
-	http.Handle("/login", rp.AuthURLHandler(
+	router.Get("/login", rp.AuthURLHandler(
 		state,
 		provider,
 		urlOptions...,
@@ -121,12 +126,17 @@ func main() {
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
 
-	http.Handle(callbackPath, rp.CodeExchangeHandler[*oidc.IDTokenClaims](f, provider))
+	router.Get(callbackPath, rp.CodeExchangeHandler[*oidc.IDTokenClaims](f, provider))
 
 	// 8081ポートでサーバーを起動
 	log.Println("Server started at http://localhost:8081")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
-		log.Fatal(err)
+	server := &http.Server{
+		Addr:    ":8081",
+		Handler: router,
+	}
+	err = server.ListenAndServe()
+	if err != nil {
+		panic(err)
 	}
 
 }
