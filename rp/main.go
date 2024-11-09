@@ -120,7 +120,7 @@ func main() {
 		// リクエストのクエリからsession_stateを取得して、cookieにセット
 		sessionState := r.URL.Query().Get("session_state")
 		if sessionState != "" {
-			w.Header().Set("Set-Cookie", fmt.Sprintf("rp_session_state=%s; Path=/;", sessionState))
+			w.Header().Add("Set-Cookie", fmt.Sprintf("rp_session_state=%s; Path=/;", sessionState))
 		}
 		fmt.Print("callback success")
 		http.Redirect(w, r, "/", http.StatusFound)
