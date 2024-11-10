@@ -7,13 +7,13 @@
         window.addEventListener("message", receiveMessage, false);
 
         function receiveMessage(e) { // e.data has client_id and session_state
-
             console.log('op iframe received message from RP iframe');
 
             var rp_session_state = e.data.substr(e.data.lastIndexOf(' ') + 1);
 
             // openid provider の cookie から op_session_state を取得
             var raw_op_session_state = document.cookie.split('; ').find(row => row.startsWith('op_session_state'))
+            console.log('document.cookie: ' + document.cookie)
             console.log('raw_op_session_state: ' + raw_op_session_state)
             var op_session_state = ''
             if (raw_op_session_state) {
