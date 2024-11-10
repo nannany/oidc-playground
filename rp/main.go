@@ -71,6 +71,17 @@ func main() {
 		rp.WithHTTPClient(client),
 		rp.WithLogger(logger),
 		rp.WithSigningAlgsFromDiscovery(),
+		rp.WithErrorHandler(func(w http.ResponseWriter, r *http.Request, errorType string, errorDesc string, state string) {
+			// jsonで、loginRequiredというメッセージを込めて、200を返却する
+			if errorType == "login_required" {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(`{"message": "loginRequired"}`))
+				return
+			}
+
+			http.Error(w, fmt.Sprintf("error: %s, description: %s", errorType, errorDesc), http.StatusBadRequest)
+		}),
 	}
 
 	// One can add a logger to the context,
@@ -87,10 +98,9 @@ func main() {
 		return uuid.New().String()
 	}
 
-	var urlOptions []rp.URLParamOpt
-	urlOptions = append(urlOptions, rp.WithResponseModeURLParam(oidc.ResponseMode(responseMode)))
-
 	router.Get("/login", func(w http.ResponseWriter, r *http.Request) {
+		var urlOptions []rp.URLParamOpt
+		urlOptions = append(urlOptions, rp.WithResponseModeURLParam(oidc.ResponseMode(responseMode)))
 		if r.URL.Query().Get("prompt") == "none" {
 			urlOptions = append(urlOptions, rp.WithPromptURLParam(oidc.PromptNone))
 		}
