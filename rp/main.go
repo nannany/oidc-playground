@@ -90,11 +90,17 @@ func main() {
 	var urlOptions []rp.URLParamOpt
 	urlOptions = append(urlOptions, rp.WithResponseModeURLParam(oidc.ResponseMode(responseMode)))
 
-	router.Get("/login", rp.AuthURLHandler(
-		state,
-		provider,
-		urlOptions...,
-	))
+	router.Get("/login", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("prompt") == "none" {
+			urlOptions = append(urlOptions, rp.WithPromptURLParam(oidc.PromptNone))
+		}
+
+		rp.AuthURLHandler(
+			state,
+			provider,
+			urlOptions...,
+		)(w, r)
+	})
 
 	// rp.CodeExchangeCallback を定義
 	f := func(w http.ResponseWriter, r *http.Request, tokens *oidc.Tokens[*oidc.IDTokenClaims], state string, rp rp.RelyingParty) {

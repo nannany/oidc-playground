@@ -60,6 +60,8 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 			request.UserID = userID.(string)
 			// https://github.com/zitadel/oidc/discussions/669
 			return op.NewRedirect("http://op.host:8080/auto-login?auth_req_id=" + request.ID), nil
+		} else if authReq.Prompt != nil && len(authReq.Prompt) == 1 && authReq.Prompt[0] == oidc.PromptNone {
+			return nil, oidc.ErrLoginRequired().WithDescription("login required")
 		}
 	}
 
