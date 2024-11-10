@@ -71,6 +71,7 @@ func main() {
 		rp.WithHTTPClient(client),
 		rp.WithLogger(logger),
 		rp.WithSigningAlgsFromDiscovery(),
+		// login_requiredエラーが発生した場合のエラーハンドラを設定
 		rp.WithErrorHandler(func(w http.ResponseWriter, r *http.Request, errorType string, errorDesc string, state string) {
 			// jsonで、loginRequiredというメッセージを込めて、200を返却する
 			if errorType == "login_required" {
@@ -79,6 +80,8 @@ func main() {
 				_, _ = w.Write([]byte(`{"message": "loginRequired"}`))
 				return
 			}
+
+			w.Header().Add("Set-Cookie", "rp_session_state=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT")
 
 			http.Error(w, fmt.Sprintf("error: %s, description: %s", errorType, errorDesc), http.StatusBadRequest)
 		}),

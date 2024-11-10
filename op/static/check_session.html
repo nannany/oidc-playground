@@ -14,12 +14,15 @@
 
             // openid provider の cookie から op_session_state を取得
             var raw_op_session_state = document.cookie.split('; ').find(row => row.startsWith('op_session_state'))
+            console.log('raw_op_session_state: ' + raw_op_session_state)
             var op_session_state = ''
             if (raw_op_session_state) {
                 op_session_state = raw_op_session_state.split('=')[1];
             }
 
             var stat = '';
+            console.log('rp_session_state: ' + rp_session_state)
+            console.log('op_session_state: ' + op_session_state)
             if (rp_session_state === op_session_state) {
                 stat = 'unchanged';
             } else {
