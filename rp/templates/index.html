@@ -44,7 +44,14 @@
             stat = e.data;
 
             if (stat === "changed") {
-                clearInterval(timerID);
+                console.log("prompt=noneでログイン試行(fetch)をする")
+                // prompt=noneでログイン試行(fetch)をする
+                fetch("http://localhost:8081/login?prompt=none", {
+                    method: "GET",
+                    mode: "no-cors",
+                    credentials: "include",
+                })
+
                 // then take the actions below...
             } else {
                 // do nothing

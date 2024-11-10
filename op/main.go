@@ -162,16 +162,22 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	_ = session.Store.Save(r, w, opSession)
 
-	// rpにリダイレクト
-	authReq := server2.AuthRequests[id]
-	authReq.UserID = "21e204ab-b1f4-4a37-b4cf-28cffabdfe49" // 可変に
-	// authReqののリダイレクトuriに session_state をセット
-	// 本当はこんなことしたくないけど、これ以外zitadelを使ってどうやるのかわからん
-	// authReqのディープコピーを作る
-	copyAuthReq := authReq.DeepCopy()
-	copyAuthReq.CallbackURI = authReq.CallbackURI + "?session_state=" + sid
+	if id == "" {
+		w.Header().Add("Set-Cookie", "op_session_state="+sid+"; Path=/; SameSite=Strict;")
+		http.Redirect(w, r, "http://op.host:8080/", http.StatusFound)
+		return
+	} else {
+		// rpにリダイレクト
+		authReq := server2.AuthRequests[id]
+		authReq.UserID = "21e204ab-b1f4-4a37-b4cf-28cffabdfe49" // 可変に
+		// authReqののリダイレクトuriに session_state をセット
+		// 本当はこんなことしたくないけど、これ以外zitadelを使ってどうやるのかわからん
+		// authReqのディープコピーを作る
+		copyAuthReq := authReq.DeepCopy()
+		copyAuthReq.CallbackURI = authReq.CallbackURI + "?session_state=" + sid
 
-	// cookie にop_session_stateをセットする
-	w.Header().Add("Set-Cookie", "op_session_state="+sid+"; Path=/; SameSite=Strict;")
-	op.AuthResponse(copyAuthReq, authorizer, w, r)
+		// cookie にop_session_stateをセットする
+		w.Header().Add("Set-Cookie", "op_session_state="+sid+"; Path=/; SameSite=Strict;")
+		op.AuthResponse(copyAuthReq, authorizer, w, r)
+	}
 }
