@@ -15,9 +15,9 @@
 </form>
 
 <!-- Passkey Registration Button -->
-<form method="POST" action="/register-passkey" style="margin-top: 20px;">
-    <button id="register-passkey-btn" type="submit" style="width: 200px;" disabled>Register Passkey</button>
-</form>
+<div style="margin-top: 20px;">
+    <button id="register-passkey-btn" type="button" style="width: 200px;" disabled>Register Passkey</button>
+</div>
 
 <script>
     const passkeyButton = document.getElementById('register-passkey-btn');
@@ -44,6 +44,76 @@
             console.error('Error checking passkey support:', err);
         }
     }
+
+    // Helper function to convert Base64URL to Base64
+    function base64UrlToBase64(base64Url) {
+        return base64Url.replace(/-/g, '+').replace(/_/g, '/').padEnd(base64Url.length + (4 - base64Url.length % 4) % 4, '=');
+    }
+
+    // Function to initiate passkey registration
+    async function registerPasskey() {
+        try {
+            // Step 1: Fetch registration options from the server
+            const response = await fetch('/register-passkey', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch registration options: ${response.statusText}`);
+            }
+
+            const options = await response.json();
+
+            // Step 2: Convert options to ArrayBuffer format
+            options.publicKey.challenge = Uint8Array.from(
+                atob(base64UrlToBase64(options.publicKey.challenge)),
+                c => c.charCodeAt(0)
+            );
+
+            options.publicKey.user.id = Uint8Array.from(
+                atob(base64UrlToBase64(options.publicKey.user.id)),
+                c => c.charCodeAt(0)
+            );
+
+            // Step 3: Call navigator.credentials.create
+            const credential = await navigator.credentials.create({
+                publicKey: options.publicKey
+            });
+
+            if (!credential) {
+                throw new Error('No credentials created.');
+            }
+
+            // Step 4: Send the result back to the server
+            const credentialData = {
+                id: credential.id,
+                type: credential.type,
+                rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+                response: {
+                    clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(credential.response.clientDataJSON))),
+                    attestationObject: btoa(String.fromCharCode(...new Uint8Array(credential.response.attestationObject))),
+                }
+            };
+
+            const result = await fetch('/register-passkey', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(credentialData)
+            });
+
+            if (!result.ok) {
+                throw new Error(`Failed to register passkey: ${result.statusText}`);
+            }
+
+            console.log('Passkey registration successful.');
+        } catch (err) {
+            console.error('Error during passkey registration:', err);
+        }
+    }
+
+    // Attach event listener to the button
+    passkeyButton.addEventListener('click', registerPasskey);
 
     // Run the checks on page load
     checkPasskeySupport();
