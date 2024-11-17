@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/google/uuid"
 	"github.com/zitadel/oidc/v3/pkg/op"
 	"html/template"
@@ -51,12 +52,26 @@ func main() {
 }
 
 func finishRegisterPasskeyHandler(writer http.ResponseWriter, request *http.Request) {
-	panic("implement me")
+	webauthnSession, _ := session.Store.Get(request, "webauthn-session")
+	sessionData := webauthnSession.Values["sessionData"].(webauthn.SessionData)
+	user := webauthnSession.Values["user"].(server2.User)
+	webauthnSession.Flashes("sessionData", "user")
+
+	credential, err := server2.WebAuthn.FinishRegistration(user, sessionData, request)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	user.AddCredential(credential)
+
+	// 200返す
+	writer.WriteHeader(http.StatusOK)
 }
 
 func registerPasskeyHandler(writer http.ResponseWriter, request *http.Request) {
 	user := server2.Users["21e204ab-b1f4-4a37-b4cf-28cffabdfe49"]
-	options, session, err := server2.WebAuthn.BeginRegistration(user)
+	options, sessionData, err := server2.WebAuthn.BeginRegistration(user)
 
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
@@ -64,10 +79,15 @@ func registerPasskeyHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	// todo:session をセッションに保存
-	slog.Info("session: %v", session)
+	slog.Info("session: %v", sessionData)
+	webAuthnSession, _ := session.Store.New(request, "webauthn-session")
+	webAuthnSession.Values["sessionData"] = sessionData
+	webAuthnSession.Values["user"] = user
+	_ = webAuthnSession.Save(request, writer)
+	_ = session.Store.Save(request, writer, webAuthnSession)
 
 	// options をjsonとして、クライアントに返す
-	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Add("Content-Type", "application/json")
 	if err := json.NewEncoder(writer).Encode(options); err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return

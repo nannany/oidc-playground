@@ -17,6 +17,7 @@ type User struct {
 	Phone             string
 	PhoneVerified     bool
 	Password          string
+	PasskeyCredential []*webauthn.Credential
 }
 
 var Users = make(map[string]*User)
@@ -38,6 +39,10 @@ func (u User) WebAuthnDisplayName() string {
 
 func (u User) WebAuthnCredentials() []webauthn.Credential {
 	return nil
+}
+
+func (u User) AddCredential(credential *webauthn.Credential) {
+	u.PasskeyCredential = append(u.PasskeyCredential, credential)
 }
 
 func init() {
