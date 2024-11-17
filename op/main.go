@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/zitadel/oidc/v3/pkg/op"
 	"html/template"
+	"log/slog"
 	"myoidc/middleware"
 	server2 "myoidc/server"
 	"myoidc/session"
@@ -31,6 +33,7 @@ func main() {
 	router.Get("/check_session_iframe", checkSessionIframeHandler)
 	router.Get("/jwks.json", jwksHandler)
 	router.Get("/auto-login", autoLoginHandler)
+	router.Post("/register-passkey", registerPasskeyHandler)
 	router.Post("/login/username", loginHandler)
 	router.Post("/logout", logoutHandler)
 
@@ -43,6 +46,26 @@ func main() {
 	err := server.ListenAndServe()
 	if err != nil {
 		panic(err)
+	}
+}
+
+func registerPasskeyHandler(writer http.ResponseWriter, request *http.Request) {
+	user := server2.Users["21e204ab-b1f4-4a37-b4cf-28cffabdfe49"]
+	options, session, err := server2.WebAuthn.BeginRegistration(user)
+
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// todo:session をセッションに保存
+	slog.Info("session: %v", session)
+
+	// options をjsonとして、クライアントに返す
+	writer.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(writer).Encode(options); err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
