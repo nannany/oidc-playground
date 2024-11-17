@@ -33,6 +33,7 @@ func main() {
 	router.Get("/check_session_iframe", checkSessionIframeHandler)
 	router.Get("/jwks.json", jwksHandler)
 	router.Get("/auto-login", autoLoginHandler)
+	router.Get("/webauthn/login/challenge", webauthnLoginChallengeHandler)
 	router.Post("/register-passkey", registerPasskeyHandler)
 	router.Post("/finish-register-passkey", finishRegisterPasskeyHandler)
 	router.Post("/login/username", loginHandler)
@@ -47,6 +48,27 @@ func main() {
 	err := server.ListenAndServe()
 	if err != nil {
 		panic(err)
+	}
+}
+
+func webauthnLoginChallengeHandler(writer http.ResponseWriter, request *http.Request) {
+	credentialAssertion, sessionData, err := server2.WebAuthn.BeginDiscoverableLogin()
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// sessionをセッションに保存
+	webauthnLoginSession, _ := session.Store.New(request, "webauthn-login")
+	sessionDataID := uuid.New().String()
+	server2.SessionData[sessionDataID] = sessionData
+	webauthnLoginSession.Values["sessionDataID"] = sessionDataID
+
+	// credentialAssertion をjsonとして、クライアントに返す
+	writer.Header().Add("Content-Type", "application/json")
+	if err := json.NewEncoder(writer).Encode(credentialAssertion); err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 

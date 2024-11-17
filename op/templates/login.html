@@ -25,5 +25,75 @@
 
     <button type="submit">Login</button>
 </form>
+
+<!-- パスキーによるログイン -->
+<button id="passkey-login" style="margin-top: 1rem;">Login with Passkey</button>
+
+<script>
+    // Helper function to convert Base64URL to Base64
+    function base64UrlToBase64(base64Url) {
+        return base64Url.replace(/-/g, '+').replace(/_/g, '/').padEnd(base64Url.length + (4 - base64Url.length % 4) % 4, '=');
+    }
+
+    document.getElementById('passkey-login').addEventListener('click', async () => {
+        try {
+            // サーバーからチャレンジを取得
+            const response = await fetch('/webauthn/login/challenge', {
+                method: 'GET',
+                credentials: 'include'
+            });
+            const challengeResponse = await response.json();
+
+            console.log(challengeResponse);
+
+            // パスキー認証の開始
+            const assertion = await navigator.credentials.get({
+                publicKey: {
+                    challenge: Uint8Array.from(
+                        atob(base64UrlToBase64(challengeResponse.publicKey.challenge)),
+                        c => c.charCodeAt(0)
+                    ),
+                    allowCredentials: challengeResponse.publicKey.allowCredentials ?
+                        challengeResponse.publicKey.allowCredentials.map(cred => ({
+                            type: 'public-key',
+                            id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0))
+                        })): undefined,
+                    timeout: 60000,
+                    userVerification: 'preferred'
+                }
+            });
+
+            // サーバーに結果を送信
+            const result = await fetch('/webauthn/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: assertion.id,
+                    rawId: btoa(String.fromCharCode(...new Uint8Array(assertion.rawId))),
+                    response: {
+                        authenticatorData: btoa(String.fromCharCode(...new Uint8Array(assertion.response.authenticatorData))),
+                        clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(assertion.response.clientDataJSON))),
+                        signature: btoa(String.fromCharCode(...new Uint8Array(assertion.response.signature))),
+                        userHandle: assertion.response.userHandle ? btoa(String.fromCharCode(...new Uint8Array(assertion.response.userHandle))) : null
+                    },
+                    type: assertion.type
+                })
+            });
+
+            if (result.ok) {
+                alert('Login successful');
+                // 必要に応じてリダイレクト
+                window.location.href = '/dashboard';
+            } else {
+                alert('Login failed');
+            }
+        } catch (error) {
+            console.error('Error during passkey login:', error);
+            alert('Passkey login failed');
+        }
+    });
+</script>
 </body>
 </html>
