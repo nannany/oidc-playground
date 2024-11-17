@@ -9,13 +9,44 @@
     <h1>Your Session ID</h1>
     <p>{{.SessionID}}</p>
 </div>
+
 <form method="POST" action="/logout" style="margin-top: 20px;">
     <button type="submit">Logout</button>
 </form>
 
 <!-- Passkey Registration Button -->
 <form method="POST" action="/register-passkey" style="margin-top: 20px;">
-    <button type="submit" style="width: 200px;">Register Passkey</button>
+    <button id="register-passkey-btn" type="submit" style="width: 200px;" disabled>Register Passkey</button>
 </form>
 
+<script>
+    const passkeyButton = document.getElementById('register-passkey-btn');
+
+    // Function to check all conditions
+    async function checkPasskeySupport() {
+        try {
+            // Check for WebAuthn support
+            const webAuthnSupported = window.PublicKeyCredential && typeof navigator.credentials.create === 'function';
+
+            // Check conditional mediation
+            const conditionalAvailable = await PublicKeyCredential.isConditionalMediationAvailable?.();
+
+            // Check platform authenticator
+            const platformAuthenticatorAvailable = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable?.();
+
+            if (webAuthnSupported && conditionalAvailable && platformAuthenticatorAvailable) {
+                passkeyButton.disabled = false; // Enable the button if all checks pass
+                console.log('Passkey registration is fully supported.');
+            } else {
+                console.warn('Passkey registration is not fully supported.');
+            }
+        } catch (err) {
+            console.error('Error checking passkey support:', err);
+        }
+    }
+
+    // Run the checks on page load
+    checkPasskeySupport();
+</script>
 </body>
+</html>
