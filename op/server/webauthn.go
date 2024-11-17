@@ -4,7 +4,7 @@ import "github.com/go-webauthn/webauthn/webauthn"
 
 var WebAuthn *webauthn.WebAuthn
 
-var sessionData = make(map[string]*webauthn.SessionData)
+var SessionData = make(map[string]*webauthn.SessionData)
 
 func init() {
 	webAuthnConfig := &webauthn.Config{
