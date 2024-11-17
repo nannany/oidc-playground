@@ -96,7 +96,7 @@
                 }
             };
 
-            const result = await fetch('/register-passkey', {
+            const result = await fetch('/finish-register-passkey', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(credentialData)

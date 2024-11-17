@@ -34,6 +34,7 @@ func main() {
 	router.Get("/jwks.json", jwksHandler)
 	router.Get("/auto-login", autoLoginHandler)
 	router.Post("/register-passkey", registerPasskeyHandler)
+	router.Post("/finish-register-passkey", finishRegisterPasskeyHandler)
 	router.Post("/login/username", loginHandler)
 	router.Post("/logout", logoutHandler)
 
@@ -47,6 +48,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func finishRegisterPasskeyHandler(writer http.ResponseWriter, request *http.Request) {
+	panic("implement me")
 }
 
 func registerPasskeyHandler(writer http.ResponseWriter, request *http.Request) {
