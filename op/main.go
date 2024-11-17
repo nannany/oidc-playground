@@ -38,6 +38,7 @@ func main() {
 	router.Post("/finish-register-passkey", finishRegisterPasskeyHandler)
 	router.Post("/login/username", loginHandler)
 	router.Post("/logout", logoutHandler)
+	router.Post("/webauthn/login", webauthnLoginHandler)
 
 	router.Mount("/", op.RegisterServer(server2.NewMyServer(), *op.DefaultEndpoints))
 
@@ -49,6 +50,23 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func webauthnLoginHandler(writer http.ResponseWriter, request *http.Request) {
+	// webauthn-loginからsessionDataを取得する
+	webauthnLoginSession, _ := session.Store.Get(request, "webauthn-login")
+	sessionDataID := webauthnLoginSession.Values["sessionDataID"]
+	sessionData := server2.SessionData[sessionDataID.(string)]
+
+	_, err := server2.WebAuthn.FinishDiscoverableLogin(nil, *sessionData, request)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// webauthn-session
+	panic("implement me")
+
 }
 
 func webauthnLoginChallengeHandler(writer http.ResponseWriter, request *http.Request) {
@@ -63,6 +81,11 @@ func webauthnLoginChallengeHandler(writer http.ResponseWriter, request *http.Req
 	sessionDataID := uuid.New().String()
 	server2.SessionData[sessionDataID] = sessionData
 	webauthnLoginSession.Values["sessionDataID"] = sessionDataID
+	err = session.Store.Save(request, writer, webauthnLoginSession)
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	// credentialAssertion をjsonとして、クライアントに返す
 	writer.Header().Add("Content-Type", "application/json")
