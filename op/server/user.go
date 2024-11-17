@@ -25,23 +25,23 @@ var Users = make(map[string]*User)
 // User は webauthn.User インターフェースを実装することを示す
 var _ webauthn.User = (*User)(nil)
 
-func (u User) WebAuthnID() []byte {
+func (u *User) WebAuthnID() []byte {
 	return []byte(u.ID)
 }
 
-func (u User) WebAuthnName() string {
+func (u *User) WebAuthnName() string {
 	return u.Username
 }
 
-func (u User) WebAuthnDisplayName() string {
+func (u *User) WebAuthnDisplayName() string {
 	return u.Username
 }
 
-func (u User) WebAuthnCredentials() []webauthn.Credential {
+func (u *User) WebAuthnCredentials() []webauthn.Credential {
 	return nil
 }
 
-func (u User) AddCredential(credential *webauthn.Credential) {
+func (u *User) AddCredential(credential *webauthn.Credential) {
 	u.PasskeyCredential = append(u.PasskeyCredential, credential)
 }
 
