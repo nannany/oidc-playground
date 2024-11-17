@@ -50,6 +50,13 @@
         return base64Url.replace(/-/g, '+').replace(/_/g, '/').padEnd(base64Url.length + (4 - base64Url.length % 4) % 4, '=');
     }
 
+    function bufferToBase64Url(buffer) {
+        return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+    }
+
     // Function to initiate passkey registration
     async function registerPasskey() {
         try {
@@ -80,23 +87,25 @@
             const credential = await navigator.credentials.create({
                 publicKey: options.publicKey
             });
-            console.log(credential)
 
             if (!credential) {
                 throw new Error('No credentials created.');
             }
 
             // Step 4: Send the result back to the server
+            // credential.response.clientDataJSON を base64url から base64 に変換
+            console.dir(credential, { depth: null, colors: true });
+
             const credentialData = {
                 id: credential.id,
                 type: credential.type,
-                rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+                rawId: bufferToBase64Url(credential.rawId),
                 response: {
-                    clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(credential.response.clientDataJSON))),
-                    attestationObject: btoa(String.fromCharCode(...new Uint8Array(credential.response.attestationObject))),
-                    publicKey: btoa(String.fromCharCode(...new Uint8Array(credential.response.publicKey))),
-                    publicKeyAlgorithm: credential.response.publicKeyAlgorithm,
-                    authenticatorData: btoa(String.fromCharCode(...new Uint8Array(credential.response.authenticatorData))),
+                    clientDataJSON: bufferToBase64Url(credential.response.clientDataJSON),
+                    attestationObject: bufferToBase64Url(credential.response.attestationObject),
+                    publicKey: bufferToBase64Url(credential.response.getPublicKey()),
+                    publicKeyAlgorithm: credential.response.getPublicKeyAlgorithm(),
+                    authenticatorData: bufferToBase64Url(credential.response.getAuthenticatorData())
                 }
             };
 
