@@ -60,8 +60,9 @@ func finishRegisterPasskeyHandler(writer http.ResponseWriter, request *http.Requ
 
 	credential, err := server2.WebAuthn.FinishRegistration(user, *sessionData, request)
 	if err != nil {
-		// errの内容をdebug
-		slog.Info("error: %v", err)
+		// errの内容をdebug. detailもみたい
+		slog.Error("error: %+v", err)
+
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -80,6 +80,7 @@
             const credential = await navigator.credentials.create({
                 publicKey: options.publicKey
             });
+            console.log(credential)
 
             if (!credential) {
                 throw new Error('No credentials created.');
@@ -93,6 +94,9 @@
                 response: {
                     clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(credential.response.clientDataJSON))),
                     attestationObject: btoa(String.fromCharCode(...new Uint8Array(credential.response.attestationObject))),
+                    publicKey: btoa(String.fromCharCode(...new Uint8Array(credential.response.publicKey))),
+                    publicKeyAlgorithm: credential.response.publicKeyAlgorithm,
+                    authenticatorData: btoa(String.fromCharCode(...new Uint8Array(credential.response.authenticatorData))),
                 }
             };
 
