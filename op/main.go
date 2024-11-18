@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/google/uuid"
 	"github.com/zitadel/oidc/v3/pkg/op"
 	"html/template"
@@ -58,7 +60,15 @@ func webauthnLoginHandler(writer http.ResponseWriter, request *http.Request) {
 	sessionDataID := webauthnLoginSession.Values["sessionDataID"]
 	sessionData := server2.SessionData[sessionDataID.(string)]
 
-	_, err := server2.WebAuthn.FinishDiscoverableLogin(nil, *sessionData, request)
+	findUserHandler := func(rawID, userHandle []byte) (user webauthn.User, err error) {
+		retUser := server2.Users[base64.RawURLEncoding.EncodeToString(rawID)]
+		if retUser == nil {
+			return nil, fmt.Errorf("user not found")
+		}
+		return retUser, nil
+	}
+
+	_, err := server2.WebAuthn.FinishDiscoverableLogin(findUserHandler, *sessionData, request)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
@@ -110,6 +120,8 @@ func finishRegisterPasskeyHandler(writer http.ResponseWriter, request *http.Requ
 	}
 
 	user.AddCredential(credential)
+
+	server2.WebAuthnIDUserMap[credential.Authenticator.AAGUID[0]] = user
 
 	// userの様子をログで見る
 	slog.Info("user: %v", user)

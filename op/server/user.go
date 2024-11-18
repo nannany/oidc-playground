@@ -22,6 +22,8 @@ type User struct {
 
 var Users = make(map[string]*User)
 
+var WebAuthnIDUserMap = make(map[byte]*User)
+
 // User は webauthn.User インターフェースを実装することを示す
 var _ webauthn.User = (*User)(nil)
 
