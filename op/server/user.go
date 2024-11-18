@@ -22,7 +22,7 @@ type User struct {
 
 var Users = make(map[string]*User)
 
-var WebAuthnIDUserMap = make(map[byte]*User)
+var WebAuthnIDUserMap = make(map[string]*User)
 
 // User は webauthn.User インターフェースを実装することを示す
 var _ webauthn.User = (*User)(nil)
@@ -40,7 +40,11 @@ func (u *User) WebAuthnDisplayName() string {
 }
 
 func (u *User) WebAuthnCredentials() []webauthn.Credential {
-	return nil
+	credentials := make([]webauthn.Credential, len(u.PasskeyCredential))
+	for i, c := range u.PasskeyCredential {
+		credentials[i] = *c
+	}
+	return credentials
 }
 
 func (u *User) AddCredential(credential *webauthn.Credential) {

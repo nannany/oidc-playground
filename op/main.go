@@ -61,22 +61,31 @@ func webauthnLoginHandler(writer http.ResponseWriter, request *http.Request) {
 	sessionData := server2.SessionData[sessionDataID.(string)]
 
 	findUserHandler := func(rawID, userHandle []byte) (user webauthn.User, err error) {
-		retUser := server2.Users[base64.RawURLEncoding.EncodeToString(rawID)]
+		targetUserID := base64.RawURLEncoding.EncodeToString(rawID)
+		userHandleStr := base64.RawURLEncoding.EncodeToString(userHandle)
+		fmt.Println("targetUserID:", targetUserID)
+		fmt.Println("userHandle:", userHandleStr)
+		retUser := server2.WebAuthnIDUserMap[targetUserID]
+
 		if retUser == nil {
 			return nil, fmt.Errorf("user not found")
 		}
 		return retUser, nil
 	}
 
-	_, err := server2.WebAuthn.FinishDiscoverableLogin(findUserHandler, *sessionData, request)
+	credential, err := server2.WebAuthn.FinishDiscoverableLogin(findUserHandler, *sessionData, request)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// webauthn-session
-	panic("implement me")
+	// credentialをとりあえずログに入れる
+	slog.Info("credential: %v", credential)
 
+	slog.Info("login success")
+
+	// 200返す
+	writer.WriteHeader(http.StatusOK)
 }
 
 func webauthnLoginChallengeHandler(writer http.ResponseWriter, request *http.Request) {
@@ -121,10 +130,12 @@ func finishRegisterPasskeyHandler(writer http.ResponseWriter, request *http.Requ
 
 	user.AddCredential(credential)
 
-	server2.WebAuthnIDUserMap[credential.Authenticator.AAGUID[0]] = user
+	server2.WebAuthnIDUserMap[base64.RawURLEncoding.EncodeToString(credential.ID)] = user
 
 	// userの様子をログで見る
 	slog.Info("user: %v", user)
+	// credential.idの様子をbase64url decodeしてログで見る
+	slog.Info("credential.id: %v", base64.RawURLEncoding.EncodeToString(credential.ID))
 
 	// 200返す
 	writer.WriteHeader(http.StatusOK)
