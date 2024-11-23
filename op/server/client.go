@@ -74,7 +74,7 @@ func (c Client) GrantTypes() []oidc.GrantType {
 }
 
 func (c Client) LoginURL(s string) string {
-	return "http://op.host:8080/login?request_id=" + s
+	return "https://satyr-ample-supposedly.ngrok-free.app/login?request_id=" + s
 }
 
 func (c Client) AccessTokenType() op.AccessTokenType {

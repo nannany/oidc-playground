@@ -59,7 +59,7 @@ func (m *MyServer) Authorize(ctx context.Context, r *op.ClientRequest[oidc.AuthR
 		if userID != nil && userID != "" {
 			request.UserID = userID.(string)
 			// https://github.com/zitadel/oidc/discussions/669
-			return op.NewRedirect("http://op.host:8080/auto-login?auth_req_id=" + request.ID), nil
+			return op.NewRedirect("https://satyr-ample-supposedly.ngrok-free.app/auto-login?auth_req_id=" + request.ID), nil
 		} else if authReq.Prompt != nil && len(authReq.Prompt) == 1 && authReq.Prompt[0] == oidc.PromptNone {
 			return op.NewRedirect(r.Client.RedirectURIs()[0] + "?error=login_required&state=" + request.GetState()), nil
 		}
@@ -90,10 +90,10 @@ func authRequestToInternal(authReq *oidc.AuthRequest, userID string) *AuthReques
 
 func (m *MyServer) Discovery(ctx context.Context, r *op.Request[struct{}]) (*op.Response, error) {
 	return op.NewResponse(&oidc.DiscoveryConfiguration{
-		Issuer:                "http://op.host:8080",
-		AuthorizationEndpoint: "http://op.host:8080/authorize",
-		TokenEndpoint:         "http://op.host:8080/oauth/token",
-		JwksURI:               "http://op.host:8080/jwks.json",
+		Issuer:                "https://satyr-ample-supposedly.ngrok-free.app",
+		AuthorizationEndpoint: "https://satyr-ample-supposedly.ngrok-free.app/authorize",
+		TokenEndpoint:         "https://satyr-ample-supposedly.ngrok-free.app/oauth/token",
+		JwksURI:               "https://satyr-ample-supposedly.ngrok-free.app/jwks.json",
 	}), nil
 }
 

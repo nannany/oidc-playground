@@ -234,7 +234,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteStrictMode,
 		MaxAge:   1,
 	})
-	http.Redirect(w, r, "http://op.host:8080/", http.StatusFound)
+	http.Redirect(w, r, "https://satyr-ample-supposedly.ngrok-free.app/", http.StatusFound)
 }
 
 func homeViewHandler(w http.ResponseWriter, r *http.Request) {
@@ -290,7 +290,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	if id == "" {
 		w.Header().Add("Set-Cookie", "op_session_state="+sid+"; Path=/; SameSite=Strict;")
-		http.Redirect(w, r, "http://op.host:8080/", http.StatusFound)
+		http.Redirect(w, r, "https://satyr-ample-supposedly.ngrok-free.app/", http.StatusFound)
 		return
 	} else {
 		// rpにリダイレクト

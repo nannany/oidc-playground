@@ -42,7 +42,7 @@ func main() {
 
 	clientID := "web"
 	clientSecret := "secret"
-	issuer := "http://op.host:8080"
+	issuer := "https://satyr-ample-supposedly.ngrok-free.app"
 	port := "8081"
 	scopes := []string{oidc.ScopeOpenID, oidc.ScopeProfile, oidc.ScopeEmail}
 	responseMode := "query"
