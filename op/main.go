@@ -289,7 +289,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	_ = session.Store.Save(r, w, opSession)
 
 	if id == "" {
-		w.Header().Add("Set-Cookie", "op_session_state="+sid+"; Path=/; SameSite=Strict;")
+		w.Header().Add("Set-Cookie", "op_session_state="+sid+"; Path=/; SameSite=None; Secure;")
 		http.Redirect(w, r, "https://satyr-ample-supposedly.ngrok-free.app/", http.StatusFound)
 		return
 	} else {
@@ -303,7 +303,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		copyAuthReq.CallbackURI = authReq.CallbackURI + "?session_state=" + sid
 
 		// cookie にop_session_stateをセットする
-		w.Header().Add("Set-Cookie", "op_session_state="+sid+"; Path=/; SameSite=Strict;")
+		w.Header().Add("Set-Cookie", "op_session_state="+sid+"; Path=/; SameSite=None; Secure;")
 		op.AuthResponse(copyAuthReq, authorizer, w, r)
 	}
 }

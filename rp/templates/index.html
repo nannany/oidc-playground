@@ -15,7 +15,7 @@
             session_state = "";
         }
         var mes = "web" + " " + session_state;
-        var targetOrigin = "http://op.host:8080"; // openid providerのorigin
+        var targetOrigin = "https://satyr-ample-supposedly.ngrok-free.app"; // openid providerのorigin
         var opFrameId = "op";
         var timerID;
 
@@ -65,6 +65,6 @@
 <body>
 <h1>{{ .Message }}</h1>
 
-<iframe id="op" src="http://op.host:8080/check_session_iframe" style="display:none"></iframe>
+<iframe id="op" src="https://satyr-ample-supposedly.ngrok-free.app/check_session_iframe" style="display:none"></iframe>
 </body>
 </html>
