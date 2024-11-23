@@ -9,8 +9,8 @@ var SessionData = make(map[string]*webauthn.SessionData)
 func init() {
 	webAuthnConfig := &webauthn.Config{
 		RPDisplayName: "Go WebAuthn",
-		RPID:          "localhost",
-		RPOrigins:     []string{"http://localhost:8080"},
+		RPID:          "satyr-ample-supposedly.ngrok-free.app",
+		RPOrigins:     []string{"https://satyr-ample-supposedly.ngrok-free.app"},
 	}
 	if WebAuthn, _ = webauthn.New(webAuthnConfig); WebAuthn == nil {
 		panic("webauthn new error")
